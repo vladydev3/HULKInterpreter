@@ -1,0 +1,15 @@
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/bin/Debug/net7.0/ConsoleApp
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/bin/Debug/net7.0/ConsoleApp.deps.json
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/bin/Debug/net7.0/ConsoleApp.runtimeconfig.json
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/bin/Debug/net7.0/ConsoleApp.dll
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/bin/Debug/net7.0/ConsoleApp.pdb
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/ConsoleApp.csproj.AssemblyReference.cache
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/ConsoleApp.GeneratedMSBuildEditorConfig.editorconfig
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/ConsoleApp.AssemblyInfoInputs.cache
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/ConsoleApp.AssemblyInfo.cs
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/ConsoleApp.csproj.CoreCompileInputs.cache
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/ConsoleApp.dll
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/refint/ConsoleApp.dll
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/ConsoleApp.pdb
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/ConsoleApp.genruntimeconfig.cache
+/home/vlady/Documents/codigo/HULKCompiler/ConsoleApp/obj/Debug/net7.0/ref/ConsoleApp.dll

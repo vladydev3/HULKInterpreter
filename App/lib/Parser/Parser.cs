@@ -18,6 +18,7 @@ static class SyntaxFacts
         {
             case TokenType.Mult:
             case TokenType.Div:
+            case TokenType.Mod:
                 return 2; 
             case TokenType.Plus:
             case TokenType.Minus:
@@ -113,8 +114,22 @@ class Parser
             return new ParenExpression(left, expression, right);
         }
 
-        var numberToken = Match(TokenType.Number);
-        return new NumberExpression(numberToken);
+        if (Current.Type == TokenType.Number)
+        {
+            var numberToken = Match(TokenType.Number);
+            return new NumberExpression(numberToken);
+        }
+        if (Current.Type == TokenType.Print)
+        {
+            var print = NextToken();
+            var lParen = Match(TokenType.LParen);
+            var expression = ParseExpression();
+            var rParen = Match(TokenType.RParen);
+
+            return new PrintExpression(print, lParen, expression, rParen);            
+        }
+
+        return null;
     }
 }
  

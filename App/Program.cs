@@ -2,8 +2,11 @@
 
 class Program{
     static void Main(){
+        var clr = Console.ForegroundColor; 
+        Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"HULK Compiler");
         Console.WriteLine($"-----------------------------");
+        Console.ForegroundColor = clr;
         while(true){
             Console.Write(">>> ");
             string code = Console.ReadLine();
@@ -29,10 +32,7 @@ class Program{
                 var color = Console.ForegroundColor; 
                 Console.ForegroundColor = ConsoleColor.DarkRed;
 
-                foreach (var diagnostic in syntaxTree.Diagnostics)
-                {
-                    Console.WriteLine(diagnostic);
-                }
+                Console.WriteLine(syntaxTree.Diagnostics[0]);
                 Console.ForegroundColor = color;
             }
         }

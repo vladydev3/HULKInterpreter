@@ -68,8 +68,25 @@ public sealed class UnaryExpression : Expression
     }
 }
 
+public class PrintExpression : Expression
+{
+    public override TokenType Type => TokenType.PrintExpression;
+    public Token PrintToken;
+    public ParenExpression ExpressionInside;  
 
-sealed class ParenExpression : Expression
+    public PrintExpression(Token printToken, Token openParen, Expression expression, Token closeParen)
+    {
+        PrintToken = printToken;
+        ExpressionInside = new ParenExpression(openParen, expression, closeParen);
+    }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        yield return ExpressionInside;
+    }
+}
+
+public sealed class ParenExpression : Expression
 {
     public override TokenType Type => TokenType.Parenthesis;
     public Token OpenParen {get;}

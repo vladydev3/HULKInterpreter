@@ -11,12 +11,12 @@ class Evaluator
         this.root = root;
     }
 
-    public int Evaluate()
+    public object Evaluate()
     {
         return EvaluateExpression(root);
     }
 
-    private int EvaluateExpression(Expression node)
+    private object EvaluateExpression(Expression node)
     {
         if (node is NumberExpression n) return (int)n.NumberToken.Value;
 
@@ -24,24 +24,29 @@ class Evaluator
             var operand = EvaluateExpression(u.Operand);
 
             if (u.OperatorToken.Type == TokenType.Plus) return operand;
-            else if (u.OperatorToken.Type == TokenType.Minus) return -operand;
+            else if (u.OperatorToken.Type == TokenType.Minus) return -(int)operand;
             else throw new Exception($"Unexpected unary operator {u.OperatorToken.Type}");
         }
+
+        if (node is PrintExpression print) return EvaluateExpression(print.ExpressionInside);
 
         if (node is BinaryExpression b)
         {
             var left = EvaluateExpression(b.Left);
             var right = EvaluateExpression(b.Right);
 
-            if (b.Operator.Type == TokenType.Plus) return left + right;
-            else if (b.Operator.Type == TokenType.Minus) return left - right;
-            else if (b.Operator.Type == TokenType.Mult) return left * right;
-            else if (b.Operator.Type == TokenType.Div) return left / right;
+            if (b.Operator.Type == TokenType.Plus) return (int)left + (int)right;
+            else if (b.Operator.Type == TokenType.Minus) return (int)left - (int)right;
+            else if (b.Operator.Type == TokenType.Mult) return (int)left * (int)right;
+            else if (b.Operator.Type == TokenType.Div) return (int)left / (int)right;
+            else if (b.Operator.Type == TokenType.Div) return (int)left % (int)right;
             else throw new Exception($"Unexpected binary operator {b.Operator.Type}");
         }
 
         if (node is ParenExpression p) return EvaluateExpression(p.Expression);
 
-        throw new Exception($"Unexpected node {node.Type}");
+        return "";
+
+        //throw new Exception($"ERROR: Unexpected node");
     }
 }

@@ -9,6 +9,8 @@ public enum TokenType
     Minus,
     Mult,
     Div,
+    Mod,
+    Print,
     Asignation,
     String,
     Boolean,
@@ -18,6 +20,7 @@ public enum TokenType
     Parenthesis,
     Error,
     // Expressions
+    PrintExpression,
     UnaryExpression,
     BinaryExpression,
     EOL

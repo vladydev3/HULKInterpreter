@@ -20,6 +20,8 @@ public class Lexer
         Tuple.Create(new Regex(@"\*"), TokenType.Mult),
         Tuple.Create(new Regex(@"\/"), TokenType.Div),
         Tuple.Create(new Regex(@"\%"), TokenType.Mod),
+        Tuple.Create(new Regex(@"\^"), TokenType.Pow),
+        Tuple.Create(new Regex("PI|sin|cos|log"), TokenType.MathFunctions),
         Tuple.Create(new Regex("print"), TokenType.Print),
         Tuple.Create(new Regex("let"), TokenType.Keyword),
         Tuple.Create(new Regex("in"), TokenType.Keyword),
@@ -50,17 +52,34 @@ public class Lexer
                 var match = regexToken.Item1.Match(code, currentIndex);
                 if (match.Success && match.Index == currentIndex)
                 {
-                    if (!int.TryParse(match.Value, out int value) && regexToken.Item2 == TokenType.Number)
+                    if (!double.TryParse(match.Value, out double value) && regexToken.Item2 == TokenType.Number)
                     {
-                        diagnostics.Add($"The number {match.Value} isn't valid Int32");
+                        diagnostics.Add($"The number {match.Value} isn't valid");
                     }
 
-                    tokens.Add(new Token(regexToken.Item2,match.Index,code.Substring(match.Index,match.Length), value));
+                    if (regexToken.Item2 == TokenType.MathFunctions){
+                        switch (match.Value){
+                            case "PI":
+                                tokens.Add(new Token(TokenType.Number, match.Index, "PI", Math.PI));
+                                break;
+                            case "cos":
+                                tokens.Add(new Token(TokenType.MathFunctions, match.Index, "cos", "cos"));
+                                break;
+                            case "sin":
+                                tokens.Add(new Token(TokenType.MathFunctions, match.Index, "sin", "sin"));
+                                break;
+                            case "log":
+                                tokens.Add(new Token(TokenType.MathFunctions, match.Index, "log", "log"));
+                                break;
+                        }
+                    }
+                    else tokens.Add(new Token(regexToken.Item2,match.Index,code.Substring(match.Index,match.Length), value));
                     len = match.Length;
                     currentIndex += len;
                     matchFound = true;
                     break;
                 }
+                len = match.Length;
             }
 
             if (currentIndex < code.Length && code[currentIndex] == ' ')
@@ -69,9 +88,9 @@ public class Lexer
             }
 
             if (!matchFound){
-                diagnostics.Add($"ERROR: bad character input: {code.Substring(currentIndex-1, len)}");
+                diagnostics.Add($"Lexical Error: {code.Substring(currentIndex, len)} is not a valid token");
 
-                tokens.Add(new Token(TokenType.Error, currentIndex++, code.Substring(currentIndex-1, len),null));
+                tokens.Add(new Token(TokenType.Error, currentIndex++, null,null));
             }
         }
 

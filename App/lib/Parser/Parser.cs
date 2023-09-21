@@ -16,6 +16,8 @@ static class SyntaxFacts
     {
         switch (kind)
         {
+            case TokenType.Pow:
+                return 3;
             case TokenType.Mult:
             case TokenType.Div:
             case TokenType.Mod:
@@ -127,6 +129,13 @@ class Parser
             var rParen = Match(TokenType.RParen);
 
             return new PrintExpression(print, lParen, expression, rParen);            
+        }
+
+        if (Current.Type == TokenType.String)
+        {
+            var stringToken = Match(TokenType.String);
+
+            return new StringExpression(stringToken);
         }
 
         return null;

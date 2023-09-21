@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-
 namespace hulk;
 
 class Evaluator
@@ -18,13 +16,15 @@ class Evaluator
 
     private object EvaluateExpression(Expression node)
     {
-        if (node is NumberExpression n) return (int)n.NumberToken.Value;
+        if (node is StringExpression s) return s.StringToken.Text;
+
+        if (node is NumberExpression n) return (double)n.NumberToken.Value;
 
         if (node is UnaryExpression u){
             var operand = EvaluateExpression(u.Operand);
 
             if (u.OperatorToken.Type == TokenType.Plus) return operand;
-            else if (u.OperatorToken.Type == TokenType.Minus) return -(int)operand;
+            else if (u.OperatorToken.Type == TokenType.Minus) return -(double)operand;
             else throw new Exception($"Unexpected unary operator {u.OperatorToken.Type}");
         }
 
@@ -35,11 +35,12 @@ class Evaluator
             var left = EvaluateExpression(b.Left);
             var right = EvaluateExpression(b.Right);
 
-            if (b.Operator.Type == TokenType.Plus) return (int)left + (int)right;
-            else if (b.Operator.Type == TokenType.Minus) return (int)left - (int)right;
-            else if (b.Operator.Type == TokenType.Mult) return (int)left * (int)right;
-            else if (b.Operator.Type == TokenType.Div) return (int)left / (int)right;
-            else if (b.Operator.Type == TokenType.Div) return (int)left % (int)right;
+            if (b.Operator.Type == TokenType.Plus) return (double)left + (double)right;
+            else if (b.Operator.Type == TokenType.Minus) return (double)left - (double)right;
+            else if (b.Operator.Type == TokenType.Mult) return (double)left * (double)right;
+            else if (b.Operator.Type == TokenType.Div) return (double)left / (double)right;
+            else if (b.Operator.Type == TokenType.Div) return (double)left % (double)right;
+            else if (b.Operator.Type == TokenType.Pow) return Math.Pow((double)left,(double)right);
             else throw new Exception($"Unexpected binary operator {b.Operator.Type}");
         }
 

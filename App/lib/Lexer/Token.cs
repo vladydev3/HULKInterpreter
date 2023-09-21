@@ -10,6 +10,8 @@ public enum TokenType
     Mult,
     Div,
     Mod,
+    Pow,
+    MathFunctions,
     Print,
     Asignation,
     String,

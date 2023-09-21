@@ -11,6 +11,22 @@ public abstract class Expression : Node
     //
 }
 
+public sealed class StringExpression : Expression
+{
+    public override TokenType Type => TokenType.String;
+    public Token StringToken { get; }
+
+    public StringExpression(Token stringToken)
+    {
+        StringToken = stringToken;
+    }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        yield return StringToken; 
+    }
+}
+
 public sealed class NumberExpression : Expression
 {
     public override TokenType Type => TokenType.Number;

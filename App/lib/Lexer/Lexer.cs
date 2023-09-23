@@ -12,8 +12,9 @@ public class Lexer
     {
         Tuple.Create(new Regex(@"\("), TokenType.LParen),
         Tuple.Create(new Regex(@"\)"), TokenType.RParen),
-        Tuple.Create(new Regex(@"\d+"), TokenType.Number),
+        Tuple.Create(new Regex(@"(?:\d+(?:\.\d*)?|\.\d+)"), TokenType.Number),
         Tuple.Create(new Regex("true|false"), TokenType.Boolean),
+        Tuple.Create(new Regex("=="), TokenType.Comparation),
         Tuple.Create(new Regex("="), TokenType.Asignation),
         Tuple.Create(new Regex(@"\+"), TokenType.Plus),
         Tuple.Create(new Regex(@"\-"), TokenType.Minus),
@@ -29,6 +30,7 @@ public class Lexer
         Tuple.Create(new Regex(@"\b[a-zA-Z_]\w*\b"), TokenType.Identificator),
         Tuple.Create(new Regex(","), TokenType.Comma),
         Tuple.Create(new Regex(" "), TokenType.WhiteSpace),
+        Tuple.Create(new Regex("!"), TokenType.Negation),
         Tuple.Create(new Regex(";"), TokenType.EOL)
     };
 
@@ -76,6 +78,19 @@ public class Lexer
                                 tokens.Add(new Token(TokenType.MathFunctions, match.Index, "log", "log"));
                                 break;
                         }
+                    }
+                    else if (regexToken.Item2 == TokenType.Boolean)
+                    {
+                        bool val;
+                        if (match.Value=="true")
+                        {
+                            val = true;
+                            tokens.Add(new Token(regexToken.Item2, match.Index, code.Substring(match.Index, match.Length), val));
+                        }
+                        else {
+                            val = false;
+                            tokens.Add(new Token(regexToken.Item2, match.Index, code.Substring(match.Index, match.Length), val));
+                        }                        
                     }
                     else if (!(regexToken.Item2 == TokenType.WhiteSpace))
                     {

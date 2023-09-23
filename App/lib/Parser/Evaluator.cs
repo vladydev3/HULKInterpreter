@@ -20,6 +20,8 @@ class Evaluator
 
         if (node is NumberExpression n) return (double)n.NumberToken.Value;
 
+        if (node is BooleanExpression boolean) return boolean.Bool.Value;
+
         if (node is MathExpression t)
         {
             switch (t.MathFunc.Text)
@@ -36,7 +38,8 @@ class Evaluator
         if (node is UnaryExpression u){
             var operand = EvaluateExpression(u.Operand);
 
-            if (u.OperatorToken.Type == TokenType.Plus) return operand;
+            if (u.OperatorToken.Type == TokenType.Negation) return !(bool)operand;
+            else if (u.OperatorToken.Type == TokenType.Plus) return operand;
             else if (u.OperatorToken.Type == TokenType.Minus) return -(double)operand;
             else throw new Exception($"Unexpected unary operator {u.OperatorToken.Type}");
         }
@@ -54,6 +57,10 @@ class Evaluator
             else if (b.Operator.Type == TokenType.Div) return (double)left / (double)right;
             else if (b.Operator.Type == TokenType.Div) return (double)left % (double)right;
             else if (b.Operator.Type == TokenType.Pow) return Math.Pow((double)left,(double)right);
+            else if (b.Operator.Type == TokenType.Comparation)
+            {
+                
+            }
             else throw new Exception($"Unexpected binary operator {b.Operator.Type}");
         }
 

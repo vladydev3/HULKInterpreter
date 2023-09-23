@@ -27,6 +27,22 @@ public sealed class StringExpression : Expression
     }
 }
 
+public sealed class BooleanExpression : Expression
+{
+    public override TokenType Type => TokenType.Boolean;
+    public Token Bool { get; }
+
+    public BooleanExpression(Token boolean)
+    {
+        Bool = boolean;
+    }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        yield return Bool;
+    }
+}
+
 public sealed class MathExpression : Expression
 {
     public override TokenType Type => TokenType.MathFunctions;

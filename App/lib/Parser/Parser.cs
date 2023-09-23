@@ -8,6 +8,8 @@ static class SyntaxFacts
             case TokenType.Plus:
             case TokenType.Minus:
                 return 3;
+            case TokenType.Negation:
+                return 1;
             default:
                 return 0;
         }
@@ -24,6 +26,7 @@ static class SyntaxFacts
                 return 2;
             case TokenType.Plus:
             case TokenType.Minus:
+            case TokenType.Comparation:
                 return 1;
             default:
                 return 0;
@@ -69,7 +72,7 @@ class Parser
     {
         if (Current.Type == Type) return NextToken();
 
-        diagnostics.Add($"Error: Unexpected token <{Current.Type}>, expected <{Type}>");
+        diagnostics.Add($"Parser Error: Unexpected token <{Current.Type}>, expected <{Type}>");
 
         return new Token(Type, Current.Position, null, null);
     }
@@ -116,6 +119,12 @@ class Parser
             return new ParenExpression(left, expression, right);
         }
 
+        if (Current.Type == TokenType.Boolean)
+        {
+            var BoolToken = Match(TokenType.Boolean);
+            return new BooleanExpression(BoolToken);
+        }
+
         if (Current.Type == TokenType.Number)
         {
             var numberToken = Match(TokenType.Number);
@@ -158,6 +167,7 @@ class Parser
 
             return new MathExpression(trigToken, lParen, expression, rParen);
         }
+
         return null;
     }
 }

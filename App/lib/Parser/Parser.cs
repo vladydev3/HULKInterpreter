@@ -12,7 +12,7 @@ static class SyntaxFacts
                 return 0;
         }
     }
-        public static int GetBinaryOperatorPrecedence(this TokenType kind)
+    public static int GetBinaryOperatorPrecedence(this TokenType kind)
     {
         switch (kind)
         {
@@ -21,7 +21,7 @@ static class SyntaxFacts
             case TokenType.Mult:
             case TokenType.Div:
             case TokenType.Mod:
-                return 2; 
+                return 2;
             case TokenType.Plus:
             case TokenType.Minus:
                 return 1;
@@ -40,7 +40,7 @@ class Parser
     public Parser(string text)
     {
         Lexer lexer = new(text);
-        
+
         var tokens = lexer.Tokenize();
 
         this.tokens = tokens.ToArray();
@@ -93,26 +93,26 @@ class Parser
         }
         else left = ParsePrimaryExpression();
 
-        while(true)
+        while (true)
         {
-            var precedence = Current.Type .GetBinaryOperatorPrecedence();
+            var precedence = Current.Type.GetBinaryOperatorPrecedence();
             if (precedence == 0 || precedence <= parentPrecedence) break;
 
             var operatorToken = NextToken();
             var right = ParseExpression(precedence);
             left = new BinaryExpression(left, operatorToken, right);
         }
-        return left; 
+        return left;
     }
 
-    private Expression ParsePrimaryExpression()
+    private Expression? ParsePrimaryExpression()
     {
         if (Current.Type == TokenType.LParen)
         {
             var left = NextToken();
             var expression = ParseExpression();
             var right = Match(TokenType.RParen);
-            
+
             return new ParenExpression(left, expression, right);
         }
 
@@ -128,7 +128,7 @@ class Parser
             var expression = ParseExpression();
             var rParen = Match(TokenType.RParen);
 
-            return new PrintExpression(print, lParen, expression, rParen);            
+            return new PrintExpression(print, lParen, expression, rParen);
         }
 
         if (Current.Type == TokenType.String)
@@ -138,7 +138,30 @@ class Parser
             return new StringExpression(stringToken);
         }
 
+        if (Current.Type == TokenType.MathFunctions)
+        {
+            if (Current.Text == "log")
+            {
+                var logToken = NextToken();
+                var openParen = Match(TokenType.LParen);
+                var bas = Match(TokenType.Number);
+                var comma = Match(TokenType.Comma);
+                var number = Match(TokenType.Number);
+                var closeParen = Match(TokenType.RParen);
+
+                return new LogExpression(logToken, bas, number);
+            }
+            var trigToken = NextToken();
+            var lParen = Match(TokenType.LParen);
+            var expression = ParseExpression();
+            var rParen = Match(TokenType.RParen);
+
+            return new MathExpression(trigToken, lParen, expression, rParen);
+        }
         return null;
     }
 }
+ 
+
+
  

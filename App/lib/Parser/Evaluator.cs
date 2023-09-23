@@ -16,9 +16,22 @@ class Evaluator
 
     private object EvaluateExpression(Expression node)
     {
-        if (node is StringExpression s) return s.StringToken.Text;
+        if (node is StringExpression s) return s.StringToken.Text.Substring(1,s.StringToken.Text.Length-2);
 
         if (node is NumberExpression n) return (double)n.NumberToken.Value;
+
+        if (node is MathExpression t)
+        {
+            switch (t.MathFunc.Text)
+            {
+                case "sin":
+                    return Math.Sin((double)EvaluateExpression(t.ExpressionInside));
+                case "cos":
+                    return Math.Cos((double)EvaluateExpression(t.ExpressionInside));
+            }
+        }
+
+        if (node is LogExpression l) return Math.Log((double)l.Number.Value, (double)l.Base.Value);
 
         if (node is UnaryExpression u){
             var operand = EvaluateExpression(u.Operand);

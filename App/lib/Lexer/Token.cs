@@ -4,7 +4,6 @@ public enum TokenType
 {
     Keyword,
     Number,
-    Space,
     Plus,
     Minus,
     Mult,
@@ -20,6 +19,8 @@ public enum TokenType
     LParen,
     RParen,
     Parenthesis,
+    Comma,
+    WhiteSpace,
     Error,
     // Expressions
     PrintExpression,

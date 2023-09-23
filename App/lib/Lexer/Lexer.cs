@@ -6,7 +6,7 @@ public class Lexer
 {
 
     private string code;
-    private List<string> diagnostics = new();    
+    private List<string> diagnostics = new();
 
     private readonly List<Tuple<Regex, TokenType>> regexToTokenType = new()
     {
@@ -27,6 +27,8 @@ public class Lexer
         Tuple.Create(new Regex("in"), TokenType.Keyword),
         Tuple.Create(new Regex("\"(.*?)\""), TokenType.String),
         Tuple.Create(new Regex(@"\b[a-zA-Z_]\w*\b"), TokenType.Identificator),
+        Tuple.Create(new Regex(","), TokenType.Comma),
+        Tuple.Create(new Regex(" "), TokenType.WhiteSpace),
         Tuple.Create(new Regex(";"), TokenType.EOL)
     };
 
@@ -57,8 +59,10 @@ public class Lexer
                         diagnostics.Add($"The number {match.Value} isn't valid");
                     }
 
-                    if (regexToken.Item2 == TokenType.MathFunctions){
-                        switch (match.Value){
+                    if (regexToken.Item2 == TokenType.MathFunctions)
+                    {
+                        switch (match.Value)
+                        {
                             case "PI":
                                 tokens.Add(new Token(TokenType.Number, match.Index, "PI", Math.PI));
                                 break;
@@ -73,7 +77,10 @@ public class Lexer
                                 break;
                         }
                     }
-                    else tokens.Add(new Token(regexToken.Item2,match.Index,code.Substring(match.Index,match.Length), value));
+                    else if (!(regexToken.Item2 == TokenType.WhiteSpace))
+                    {
+                        tokens.Add(new Token(regexToken.Item2, match.Index, code.Substring(match.Index, match.Length), value));
+                    }
                     len = match.Length;
                     currentIndex += len;
                     matchFound = true;
@@ -87,14 +94,15 @@ public class Lexer
                 currentIndex++;
             }
 
-            if (!matchFound){
+            if (!matchFound)
+            {
                 diagnostics.Add($"Lexical Error: {code.Substring(currentIndex, len)} is not a valid token");
 
-                tokens.Add(new Token(TokenType.Error, currentIndex++, null,null));
+                tokens.Add(new Token(TokenType.Error, currentIndex++, null, null));
             }
         }
 
-        if (tokens[tokens.Count-1].Type != TokenType.EOL)
+        if (tokens[tokens.Count - 1].Type != TokenType.EOL)
         {
             tokens.Add(new Token(TokenType.Error, currentIndex, null, null));
         }

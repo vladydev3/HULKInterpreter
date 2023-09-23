@@ -2,8 +2,8 @@ namespace hulk;
 
 public abstract class Node
 {
-    public abstract TokenType Type {get;}
-    public abstract IEnumerable<Node> GetChildren();     
+    public abstract TokenType Type { get; }
+    public abstract IEnumerable<Node> GetChildren();
 }
 
 public abstract class Expression : Node
@@ -23,8 +23,49 @@ public sealed class StringExpression : Expression
 
     public override IEnumerable<Node> GetChildren()
     {
-        yield return StringToken; 
+        yield return StringToken;
     }
+}
+
+public sealed class MathExpression : Expression
+{
+    public override TokenType Type => TokenType.MathFunctions;
+    public Token MathFunc { get; }
+    public ParenExpression ExpressionInside { get; }
+
+    public MathExpression(Token mathFunc, Token openParen, Expression expression, Token closeParen)
+    {
+        MathFunc = mathFunc;
+        ExpressionInside = new ParenExpression(openParen, expression, closeParen);
+    }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        yield return MathFunc;
+        yield return ExpressionInside;
+    }
+}
+
+public sealed class LogExpression : Expression
+{
+    public override TokenType Type => TokenType.MathFunctions;
+    public Token LogFunc { get; }
+    public Token Base { get; }
+    public Token Number { get; }
+
+    public LogExpression(Token logFunc, Token b, Token number)
+    {
+        LogFunc = logFunc;
+        Base = b;
+        Number = number;
+    }
+    public override IEnumerable<Node> GetChildren()
+    {
+        yield return LogFunc;
+        yield return Base;
+        yield return Number;
+    }
+
 }
 
 public sealed class NumberExpression : Expression
@@ -88,7 +129,7 @@ public class PrintExpression : Expression
 {
     public override TokenType Type => TokenType.PrintExpression;
     public Token PrintToken;
-    public ParenExpression ExpressionInside;  
+    public ParenExpression ExpressionInside;
 
     public PrintExpression(Token printToken, Token openParen, Expression expression, Token closeParen)
     {
@@ -105,10 +146,10 @@ public class PrintExpression : Expression
 public sealed class ParenExpression : Expression
 {
     public override TokenType Type => TokenType.Parenthesis;
-    public Token OpenParen {get;}
-    public Expression Expression {get;}
-    public Token CloseParen {get;}
-    
+    public Token OpenParen { get; }
+    public Expression Expression { get; }
+    public Token CloseParen { get; }
+
     public ParenExpression(Token openParen, Expression expression, Token closeParen)
     {
         OpenParen = openParen;

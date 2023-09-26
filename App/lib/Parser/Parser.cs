@@ -19,13 +19,19 @@ static class SyntaxFacts
         switch (kind)
         {
             case TokenType.Pow:
-                return 3;
+                return 4;
             case TokenType.Mult:
             case TokenType.Div:
             case TokenType.Mod:
-                return 2;
+                return 3;
             case TokenType.Plus:
             case TokenType.Minus:
+                return 2;
+            case TokenType.Concat:
+            case TokenType.Bigger:
+            case TokenType.BiggerOrEqual:
+            case TokenType.Minor:
+            case TokenType.MinorOrEqual:
             case TokenType.Comparation:
                 return 1;
             default:
@@ -127,9 +133,18 @@ class Parser
 
         if (Current.Type == TokenType.Number)
         {
+            if (Current.Text == "rand")
+            {
+                var random = Match(TokenType.Number);
+                Match(TokenType.LParen);
+                Match(TokenType.RParen);
+
+                return new NumberExpression(random);
+            }
             var numberToken = Match(TokenType.Number);
             return new NumberExpression(numberToken);
         }
+        
         if (Current.Type == TokenType.Print)
         {
             var print = NextToken();
@@ -171,7 +186,6 @@ class Parser
         return null;
     }
 }
- 
 
 
- 
+

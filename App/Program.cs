@@ -26,7 +26,13 @@ class Program{
             {
                 var e = new Evaluator(syntaxTree.Root);
                 var result = e.Evaluate();
+                ConsoleColor color = Console.ForegroundColor;
+                if (e.Diagnostics.Count!=0)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                }
                 Console.WriteLine(result);
+                Console.ForegroundColor = color;
             }
             else {
                 var color = Console.ForegroundColor; 

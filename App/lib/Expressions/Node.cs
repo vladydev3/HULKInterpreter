@@ -14,7 +14,7 @@ public abstract class Expression : Node
 public sealed class StringExpression : Expression
 {
     public override TokenType Type => TokenType.String;
-    public Token StringToken { get; }
+    public Token StringToken;
 
     public StringExpression(Token stringToken)
     {

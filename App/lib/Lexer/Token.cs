@@ -10,10 +10,15 @@ public enum TokenType
     Div,
     Mod,
     Pow,
+    Concat,
     Negation,
     MathFunctions,
     Print,
     Comparation,
+    BiggerOrEqual,
+    MinorOrEqual,
+    Bigger,
+    Minor,
     Asignation,
     String,
     Boolean,
@@ -35,7 +40,7 @@ public class Token : Node
 {
     public override TokenType Type { get; }
     public int Position { get; }
-    public string Text { get; }
+    public string Text { get; set; }
     public object Value { get; }
 
     public Token(TokenType type, int position, string text, object value)

@@ -14,6 +14,10 @@ public class Lexer
         Tuple.Create(new Regex(@"\)"), TokenType.RParen),
         Tuple.Create(new Regex(@"(?:\d+(?:\.\d*)?|\.\d+)"), TokenType.Number),
         Tuple.Create(new Regex("true|false"), TokenType.Boolean),
+        Tuple.Create(new Regex(">="), TokenType.BiggerOrEqual),
+        Tuple.Create(new Regex("<="), TokenType.MinorOrEqual),
+        Tuple.Create(new Regex("<"), TokenType.Minor),
+        Tuple.Create(new Regex(">"), TokenType.Bigger),
         Tuple.Create(new Regex("=="), TokenType.Comparation),
         Tuple.Create(new Regex("="), TokenType.Asignation),
         Tuple.Create(new Regex(@"\+"), TokenType.Plus),
@@ -22,11 +26,12 @@ public class Lexer
         Tuple.Create(new Regex(@"\/"), TokenType.Div),
         Tuple.Create(new Regex(@"\%"), TokenType.Mod),
         Tuple.Create(new Regex(@"\^"), TokenType.Pow),
-        Tuple.Create(new Regex("PI|sin|cos|log"), TokenType.MathFunctions),
+        Tuple.Create(new Regex(@"\@"), TokenType.Concat),
+        Tuple.Create(new Regex("PI|sin|cos|log|exp|rand|sqrt|E"), TokenType.MathFunctions),
         Tuple.Create(new Regex("print"), TokenType.Print),
         Tuple.Create(new Regex("let"), TokenType.Keyword),
         Tuple.Create(new Regex("in"), TokenType.Keyword),
-        Tuple.Create(new Regex("\"(.*?)\""), TokenType.String),
+        Tuple.Create(new Regex("\"([^\"\\\\]|\\\\.)*\""), TokenType.String),
         Tuple.Create(new Regex(@"\b[a-zA-Z_]\w*\b"), TokenType.Identificator),
         Tuple.Create(new Regex(","), TokenType.Comma),
         Tuple.Create(new Regex(" "), TokenType.WhiteSpace),
@@ -63,19 +68,21 @@ public class Lexer
 
                     if (regexToken.Item2 == TokenType.MathFunctions)
                     {
+                        var random = new Random();
+                        double randomNum = random.NextDouble();
                         switch (match.Value)
                         {
                             case "PI":
                                 tokens.Add(new Token(TokenType.Number, match.Index, "PI", Math.PI));
                                 break;
-                            case "cos":
-                                tokens.Add(new Token(TokenType.MathFunctions, match.Index, "cos", "cos"));
+                            case "E":
+                                tokens.Add(new Token(TokenType.Number, match.Index, "E", Math.E));
                                 break;
-                            case "sin":
-                                tokens.Add(new Token(TokenType.MathFunctions, match.Index, "sin", "sin"));
+                            case "rand":
+                                tokens.Add(new Token(TokenType.Number, match.Index, "rand", randomNum));
                                 break;
-                            case "log":
-                                tokens.Add(new Token(TokenType.MathFunctions, match.Index, "log", "log"));
+                            default:
+                                tokens.Add(new Token(regexToken.Item2, match.Index, match.Value, match.Value));
                                 break;
                         }
                     }
@@ -94,7 +101,7 @@ public class Lexer
                     }
                     else if (!(regexToken.Item2 == TokenType.WhiteSpace))
                     {
-                        tokens.Add(new Token(regexToken.Item2, match.Index, code.Substring(match.Index, match.Length), value));
+                        tokens.Add(new Token(regexToken.Item2, match.Index, match.Value, value));
                     }
                     len = match.Length;
                     currentIndex += len;

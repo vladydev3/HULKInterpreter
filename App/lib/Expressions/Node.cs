@@ -181,24 +181,7 @@ public sealed class ParenExpression : Expression
     }
 }
 
-sealed class SyntaxTree
-{
-    public SyntaxTree(IEnumerable<string> diagnostics, Expression root, Token endOfFileToken)
-    {
-        Root = root;
-        EndOfFileToken = endOfFileToken;
-        Diagnostics = diagnostics.ToList();
-    }
-    public List<string> Diagnostics;
-    public Expression Root { get; }
-    public Token EndOfFileToken { get; }
 
-    public static SyntaxTree Parse(string text)
-    {
-        var parser = new Parser(text);
-        return parser.Parse();
-    }
-}
 
 
 // /*

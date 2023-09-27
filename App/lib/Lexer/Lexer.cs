@@ -6,7 +6,8 @@ public class Lexer
 {
 
     private string code;
-    private List<string> diagnostics = new();
+    public Errors diagnostics = new();
+    //private List<string> diagnostics = new();
 
     private readonly List<Tuple<Regex, TokenType>> regexToTokenType = new()
     {
@@ -44,7 +45,8 @@ public class Lexer
         this.code = code;
     }
 
-    public IEnumerable<string> Diagnostics => diagnostics;
+    
+    //public IEnumerable<string> Diagnostics => diagnostics;
 
     public List<Token> Tokenize()
     {
@@ -63,7 +65,7 @@ public class Lexer
                 {
                     if (!double.TryParse(match.Value, out double value) && regexToken.Item2 == TokenType.Number)
                     {
-                        diagnostics.Add($"The number {match.Value} isn't valid");
+                        diagnostics.AddError($"The number {match.Value} isn't valid");
                     }
 
                     if (regexToken.Item2 == TokenType.MathFunctions)
@@ -118,7 +120,7 @@ public class Lexer
 
             if (!matchFound)
             {
-                diagnostics.Add($"Lexical Error: {code.Substring(currentIndex, len)} is not a valid token");
+                diagnostics.AddError($"Lexical Error: {code.Substring(currentIndex, len)} is not a valid token");
 
                 tokens.Add(new Token(TokenType.Error, currentIndex++, null, null));
             }

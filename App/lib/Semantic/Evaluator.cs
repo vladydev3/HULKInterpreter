@@ -301,6 +301,6 @@ class Evaluator
 
         if (node is ParenExpression p) return EvaluateExpression(p.Expression);
 
-        return Diagnostics[0];
+        return "";
     }
 }

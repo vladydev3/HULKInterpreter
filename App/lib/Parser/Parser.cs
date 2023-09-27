@@ -42,8 +42,7 @@ static class SyntaxFacts
 class Parser
 {
     private readonly Token[] tokens;
-
-    private List<string> diagnostics = new();
+    public Errors Diagnostics = new();
     private int position;
 
     public Parser(string text)
@@ -53,10 +52,8 @@ class Parser
         var tokens = lexer.Tokenize();
 
         this.tokens = tokens.ToArray();
-        diagnostics.AddRange(lexer.Diagnostics);
+        Diagnostics = lexer.diagnostics;
     }
-
-    public IEnumerable<string> Diagnostics => diagnostics;
 
     private Token Peek(int offset)
     {
@@ -78,7 +75,7 @@ class Parser
     {
         if (Current.Type == Type) return NextToken();
 
-        diagnostics.Add($"Parser Error: Unexpected token <{Current.Type}>, expected <{Type}>");
+        Diagnostics.AddError($"Parser Error: Unexpected token <{Current.Type}>, expected <{Type}>");
 
         return new Token(Type, Current.Position, null, null);
     }
@@ -87,7 +84,7 @@ class Parser
     {
         var expression = ParseExpression();
         var endOfFileToken = Match(TokenType.EOL);
-        return new SyntaxTree(diagnostics, expression, endOfFileToken);
+        return new SyntaxTree(Diagnostics, expression, endOfFileToken);
     }
     private Expression ParseExpression(int parentPrecedence = 0)
     {

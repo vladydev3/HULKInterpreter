@@ -28,15 +28,9 @@ class Program
             if (syntaxTree.Diagnostics.AnyError()) syntaxTree.Diagnostics.ShowError();
             else
             {
-                var e = new Evaluator(syntaxTree.Root);
-                var result = e.Evaluate();
-                ConsoleColor color = Console.ForegroundColor;
-                if (e.Diagnostics.Count != 0)
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                }
-                Console.WriteLine(result);
-                Console.ForegroundColor = color;
+                var result = Evaluator.Evaluate(syntaxTree.Root);
+                if (Evaluator.Diagnostics.AnyError()) Evaluator.Diagnostics.ShowError();
+                else Console.WriteLine(result);
             }
         }
     }

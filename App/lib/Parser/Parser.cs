@@ -143,7 +143,7 @@ class Parser
             var numberToken = Match(TokenType.Number);
             return new NumberExpression(numberToken);
         }
-        
+
         if (Current.Type == TokenType.Print)
         {
             var print = NextToken();
@@ -184,17 +184,33 @@ class Parser
 
         if (Current.Type == TokenType.Keyword)
         {
-            if (Current.Text == "let"){
+            if (Current.Text == "let")
+            {
                 var let = Match(TokenType.Keyword);
                 var variableName = Match(TokenType.Identificator);
                 var equal = Match(TokenType.Asignation);
                 var expression = ParseExpression();
-                var inToken = Match(TokenType.Keyword);
-                var inExpression = ParseExpression();
+                if (Current.Type == TokenType.Comma)
+                {
+                    var comma = Match(TokenType.Comma);
+                    var let2 = Match(TokenType.Keyword);
+                    var variableName2 = Match(TokenType.Identificator);
+                    var equal2 = Match(TokenType.Asignation); ;
+                    var expression2 = ParseExpression();
+                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName.Text, expression));
+                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName2.Text, expression2));
+                    var intoken = Match(TokenType.Keyword);
+                    var inexpression = ParseExpression();
+                    return new LetInExpression(variableName, variableName2, expression, expression2, inexpression)      ;
+                }
+                else
+                {
+                    var inToken = Match(TokenType.Keyword);
+                    var inExpression = ParseExpression();
+                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName.Text, expression));
+                    return new LetInExpression(variableName, null, expression, null, inExpression);
+                }
 
-                Evaluator.VariableScope.Add(new Tuple<string,Expression>(variableName.Text, expression));
-
-                return new LetInExpression(variableName, expression, inExpression);
             }
         }
 

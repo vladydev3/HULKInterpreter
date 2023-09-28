@@ -11,6 +11,7 @@ class Program
         Console.ForegroundColor = clr;
         while (true)
         {
+            Evaluator.VariableScope = new List<Tuple<string, Expression>>();
             Console.Write(">>> ");
             string code = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(code)) return;

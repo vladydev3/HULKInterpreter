@@ -68,3 +68,33 @@ public sealed class NumberExpression : Expression
     }
 }
 
+public sealed class VariableExpression : Expression
+{
+    public override TokenType Type => TokenType.Identificator;
+    public Token VariableName;
+
+    public VariableExpression(Token variableName)
+    {
+        VariableName = variableName;
+    }
+
+    public override object EvaluateExpression()
+    {
+        foreach (var item in Evaluator.VariableScope)
+        {
+            if (item.Item1 == VariableName.Text)
+            {
+                var toReturn = item.Item2.EvaluateExpression();
+
+                return toReturn;
+            }
+        }
+        Evaluator.Diagnostics.AddError($"{VariableName.Text} is not defined");
+        return null;
+    }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        yield return VariableName;
+    }
+}

@@ -30,6 +30,7 @@ public enum TokenType
     WhiteSpace,
     Error,
     // Expressions
+    LetInExpression,
     PrintExpression,
     UnaryExpression,
     BinaryExpression,

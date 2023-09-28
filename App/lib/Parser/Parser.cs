@@ -1,4 +1,6 @@
-﻿namespace hulk;
+﻿using System.Reflection.Metadata;
+
+namespace hulk;
 static class SyntaxFacts
 {
     public static int GetUnaryOperatorPrecedence(this TokenType kind)
@@ -178,6 +180,29 @@ class Parser
             var rParen = Match(TokenType.RParen);
 
             return new MathExpression(trigToken, lParen, expression, rParen);
+        }
+
+        if (Current.Type == TokenType.Keyword)
+        {
+            if (Current.Text == "let"){
+                var let = Match(TokenType.Keyword);
+                var variableName = Match(TokenType.Identificator);
+                var equal = Match(TokenType.Asignation);
+                var expression = ParseExpression();
+                var inToken = Match(TokenType.Keyword);
+                var inExpression = ParseExpression();
+
+                Evaluator.VariableScope.Add(new Tuple<string,Expression>(variableName.Text, expression));
+
+                return new LetInExpression(variableName, expression, inExpression);
+            }
+        }
+
+        if (Current.Type == TokenType.Identificator)
+        {
+            var name = Match(TokenType.Identificator);
+
+            return new VariableExpression(name);
         }
 
         return null;

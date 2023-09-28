@@ -45,9 +45,6 @@ public class Lexer
         this.code = code;
     }
 
-    
-    //public IEnumerable<string> Diagnostics => diagnostics;
-
     public List<Token> Tokenize()
     {
         List<Token> tokens = new();

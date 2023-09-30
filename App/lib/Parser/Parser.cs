@@ -192,8 +192,8 @@ class Parser
                 var expression = ParseExpression();
                 if (Current.Type == TokenType.Comma)
                 {
-                    var comma = Match(TokenType.Comma);
-                    var let2 = Match(TokenType.Keyword);
+                    Match(TokenType.Comma);
+                    Match(TokenType.Keyword);
                     var variableName2 = Match(TokenType.Identificator);
                     var equal2 = Match(TokenType.Asignation); ;
                     var expression2 = ParseExpression();
@@ -201,16 +201,33 @@ class Parser
                     Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName2.Text, expression2));
                     var intoken = Match(TokenType.Keyword);
                     var inexpression = ParseExpression();
-                    return new LetInExpression(variableName, variableName2, expression, expression2, inexpression)      ;
+                    return new LetInExpression(variableName, variableName2, expression, expression2, inexpression);
                 }
                 else
                 {
-                    var inToken = Match(TokenType.Keyword);
+                    Match(TokenType.Keyword);
                     var inExpression = ParseExpression();
                     Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName.Text, expression));
                     return new LetInExpression(variableName, null, expression, null, inExpression);
                 }
 
+            }
+            if (Current.Text == "if")
+            {
+                var ifToken = Match(TokenType.Keyword);
+                var lParen = Match(TokenType.LParen);
+                var condition = ParseExpression();
+                var rParen = Match(TokenType.RParen);
+                var ifexpression = ParseExpression();
+                var elseToken = Match(TokenType.Else);
+                var elseexpression = ParseExpression();
+
+                return new IfExpression(condition, ifexpression, elseexpression);
+            }
+            if (Current.Text == "function")
+            {
+                ParseFunctionExpression();
+                return null;
             }
         }
 
@@ -218,10 +235,49 @@ class Parser
         {
             var name = Match(TokenType.Identificator);
 
+            if (Current.Type == TokenType.LParen)
+            {
+                Match(TokenType.LParen);
+                List<Expression> arguments = new();
+                arguments.Add(ParseExpression());
+                while (Current.Type != TokenType.RParen)
+                {
+                    Match(TokenType.Comma);
+                    arguments.Add(ParseExpression());
+                }
+                Match(TokenType.RParen);
+                return new FunctionCallExpression(name, arguments);
+            }
+
             return new VariableExpression(name);
         }
 
+
         return null;
+    }
+    private void ParseFunctionExpression()
+    {
+        Match(TokenType.Keyword);
+        var name = Match(TokenType.Identificator);
+        Match(TokenType.LParen);
+        List<Token> arguments = new();
+        arguments.Add(Match(TokenType.Identificator));
+        while (Current.Type != TokenType.RParen)
+        {
+            Match(TokenType.Comma);
+            arguments.Add(Match(TokenType.Identificator));
+        }
+        Match(TokenType.RParen);
+        Match(TokenType.Asignation);
+        Match(TokenType.Bigger);
+        var body = ParseExpression();
+
+        foreach (var item in Evaluator.FunctionsScope)
+        {
+            if (item.Item1 == name.Text) Diagnostics.AddError($"Parser Error: \"{name.Text}\" is already defined.");
+        }
+
+        Evaluator.FunctionsScope.Add(new Tuple<string, List<Token>, Expression>(name.Text, arguments, body));
     }
 }
 

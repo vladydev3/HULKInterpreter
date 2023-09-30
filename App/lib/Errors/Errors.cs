@@ -14,6 +14,7 @@ public class Errors
         var color = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.DarkRed;
         Console.WriteLine(diagnostics[0]);
+        diagnostics = new();
         Console.ForegroundColor = color;
     }
 

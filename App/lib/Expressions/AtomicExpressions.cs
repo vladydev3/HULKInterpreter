@@ -84,12 +84,10 @@ public sealed class VariableExpression : Expression
         {
             if (item.Item1 == VariableName.Text)
             {
-                var toReturn = item.Item2.EvaluateExpression();
-
-                return toReturn;
+                return item.Item2.EvaluateExpression();
             }
         }
-        Evaluator.Diagnostics.AddError($"{VariableName.Text} is not defined");
+        Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{VariableName.Text}\" is not defined");
         return null;
     }
 

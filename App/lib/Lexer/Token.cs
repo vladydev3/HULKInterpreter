@@ -14,6 +14,7 @@ public enum TokenType
     Negation,
     MathFunctions,
     Print,
+    Else,
     Comparation,
     BiggerOrEqual,
     MinorOrEqual,
@@ -30,6 +31,8 @@ public enum TokenType
     WhiteSpace,
     Error,
     // Expressions
+    FunctionExpression,
+    IfExpression,
     LetInExpression,
     PrintExpression,
     UnaryExpression,

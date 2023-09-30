@@ -41,7 +41,14 @@ public class PrintExpression : Expression
 
     public override object EvaluateExpression()
     {
-        return Evaluator.Evaluate(ExpressionInside);
+        try
+        {
+            return Evaluator.Evaluate(ExpressionInside);
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
     }
 
     public override IEnumerable<Node> GetChildren()

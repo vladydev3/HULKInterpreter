@@ -1,6 +1,6 @@
 namespace hulk;
 
-sealed class SyntaxTree
+public sealed class SyntaxTree
 {
     public SyntaxTree(Errors diagnostics, Expression root, Token endOfFileToken)
     {

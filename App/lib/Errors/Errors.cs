@@ -22,4 +22,9 @@ public class Errors
     {
         diagnostics.Add(error);
     }
+
+    public void RemoveError()
+    {
+        diagnostics.RemoveAt(diagnostics.Count-1);
+    }
 }

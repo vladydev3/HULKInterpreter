@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/vlady/Documents/codigo/HULKCompiler/lib/lib.csproj": {}
+    "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj": {}
   },
   "projects": {
-    "/home/vlady/Documents/codigo/HULKCompiler/lib/lib.csproj": {
+    "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/vlady/Documents/codigo/HULKCompiler/lib/lib.csproj",
+        "projectUniqueName": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj",
         "projectName": "lib",
-        "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/lib/lib.csproj",
+        "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj",
         "packagesPath": "/home/vlady/.nuget/packages/",
-        "outputPath": "/home/vlady/Documents/codigo/HULKCompiler/lib/obj/",
+        "outputPath": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/vlady/.nuget/NuGet/NuGet.Config"
@@ -37,6 +37,28 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.5.0, )"
+            },
+            "NUnit": {
+              "target": "Package",
+              "version": "[3.13.3, )"
+            },
+            "NUnit.Analyzers": {
+              "target": "Package",
+              "version": "[3.6.1, )"
+            },
+            "NUnit3TestAdapter": {
+              "target": "Package",
+              "version": "[4.4.2, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

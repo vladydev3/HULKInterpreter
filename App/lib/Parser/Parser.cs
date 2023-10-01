@@ -24,7 +24,6 @@ static class SyntaxFacts
                 return 5;
             case TokenType.Mult:
             case TokenType.Div:
-            case TokenType.Mod:
                 return 4;
             case TokenType.Plus:
             case TokenType.Minus:
@@ -35,6 +34,8 @@ static class SyntaxFacts
             case TokenType.Minor:
             case TokenType.MinorOrEqual:
             case TokenType.Comparation:
+            case TokenType.Mod:
+            case TokenType.Diferent:
                 return 2;
             case TokenType.And:
             case TokenType.Or:
@@ -80,7 +81,8 @@ class Parser
     {
         if (Current.Type == Type) return NextToken();
 
-        Diagnostics.AddError($"Parser Error: Unexpected token <{Current.Type}>, expected <{Type}>");
+        if (Type==TokenType.RParen) Diagnostics.AddError($"! SYNTAX ERROR: Missing closing parenthesis after '{tokens[position-1].Text}'.");
+        else Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected <{Type}> type.");
 
         return new Token(Type, Current.Position, null, null);
     }
@@ -217,12 +219,12 @@ class Parser
             }
             if (Current.Text == "if")
             {
-                var ifToken = Match(TokenType.Keyword);
-                var lParen = Match(TokenType.LParen);
+                Match(TokenType.Keyword);
+                Match(TokenType.LParen);
                 var condition = ParseExpression();
-                var rParen = Match(TokenType.RParen);
+                Match(TokenType.RParen);
                 var ifexpression = ParseExpression();
-                var elseToken = Match(TokenType.Else);
+                Match(TokenType.Else);
                 var elseexpression = ParseExpression();
 
                 return new IfExpression(condition, ifexpression, elseexpression);

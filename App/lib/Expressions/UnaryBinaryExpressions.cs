@@ -135,7 +135,9 @@ public sealed class BinaryExpression : Expression
             }
             try
             {
-                return left + (string)right;
+                var toReturn = left + (string)right;
+                Evaluator.Diagnostics.RemoveError();
+                return toReturn;
             }
             catch (Exception e)
             {
@@ -166,11 +168,34 @@ public sealed class BinaryExpression : Expression
 
             try
             {
-                return (bool)left == (bool)right;
+                var toReturn = (bool)left == (bool)right;
+                Evaluator.Diagnostics.RemoveError();
+                return toReturn;
             }
             catch (Exception e)
             {
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {$"! SEMANTIC ERROR: {e.Message}"}");
+            }
+        }
+        else if (Operator.Type == TokenType.Diferent)
+        {
+            try
+            {
+                return (bool)left != (bool)right;
+            }
+            catch (Exception e)
+            {
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+            }
+            try
+            {
+                var toReturn = (double)left != (double)right;
+                Evaluator.Diagnostics.RemoveError();
+                return toReturn;
+            }
+            catch (Exception e)
+            {
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
         else if (Operator.Type == TokenType.Bigger)

@@ -15,6 +15,7 @@ public class Lexer
         Tuple.Create(new Regex(@"\)"), TokenType.RParen),
         Tuple.Create(new Regex(@"(?:\d+(?:\.\d*)?|\.\d+)"), TokenType.Number),
         Tuple.Create(new Regex("true|false"), TokenType.Boolean),
+        Tuple.Create(new Regex("!="), TokenType.Diferent),
         Tuple.Create(new Regex(">="), TokenType.BiggerOrEqual),
         Tuple.Create(new Regex("<="), TokenType.MinorOrEqual),
         Tuple.Create(new Regex("<"), TokenType.Minor),
@@ -31,11 +32,14 @@ public class Lexer
         Tuple.Create(new Regex(@"\^"), TokenType.Pow),
         Tuple.Create(new Regex(@"\@"), TokenType.Concat),
         Tuple.Create(new Regex("PI|sin|cos|log|exp|rand|sqrt|E"), TokenType.MathFunctions),
-        Tuple.Create(new Regex("print"), TokenType.Print),
-        Tuple.Create(new Regex("if|in|let|function"), TokenType.Keyword),
-        Tuple.Create(new Regex("else"), TokenType.Else),
-        Tuple.Create(new Regex("\"([^\"\\\\]|\\\\.)*\""), TokenType.String),
+        Tuple.Create(new Regex(@"\bprint"), TokenType.Print),
+        Tuple.Create(new Regex(@"\bin\b"), TokenType.Keyword),
+        Tuple.Create(new Regex(@"\blet\b"), TokenType.Keyword),
+        Tuple.Create(new Regex(@"\bif"), TokenType.Keyword),
+        Tuple.Create(new Regex(@"\bfunction"), TokenType.Keyword),
+        Tuple.Create(new Regex(@"\belse\b"), TokenType.Else),
         Tuple.Create(new Regex(@"\b[a-zA-Z_]\w*\b"), TokenType.Identificator),
+        Tuple.Create(new Regex("\"([^\"\\\\]|\\\\.)*\""), TokenType.String),
         Tuple.Create(new Regex(","), TokenType.Comma),
         Tuple.Create(new Regex(" "), TokenType.WhiteSpace),
         Tuple.Create(new Regex("!"), TokenType.Negation),
@@ -64,7 +68,7 @@ public class Lexer
                 {
                     if (!double.TryParse(match.Value, out double value) && regexToken.Item2 == TokenType.Number)
                     {
-                        diagnostics.AddError($"The number {match.Value} isn't valid");
+                        diagnostics.AddError($"! LEXICAL ERROR: The number '{match.Value}' isn't valid");
                     }
 
                     if (regexToken.Item2 == TokenType.MathFunctions)
@@ -119,7 +123,7 @@ public class Lexer
 
             if (!matchFound)
             {
-                diagnostics.AddError($"Lexical Error: {code.Substring(currentIndex, len)} is not a valid token");
+                diagnostics.AddError($"! LEXICAL ERROR: '{code.Substring(currentIndex, len)}' is not a valid token");
 
                 tokens.Add(new Token(TokenType.Error, currentIndex++, null, null));
             }

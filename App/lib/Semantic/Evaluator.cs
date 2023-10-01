@@ -1,6 +1,6 @@
 namespace hulk;
 
-class Evaluator
+public class Evaluator
 {
     public static Errors Diagnostics = new();
     public static List<Tuple<string,Expression>> VariableScope = new();

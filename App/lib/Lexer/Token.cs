@@ -22,6 +22,7 @@ public enum TokenType
     MinorOrEqual,
     Bigger,
     Minor,
+    Diferent,
     Asignation,
     String,
     Boolean,

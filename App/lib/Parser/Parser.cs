@@ -21,20 +21,23 @@ static class SyntaxFacts
         switch (kind)
         {
             case TokenType.Pow:
-                return 4;
+                return 5;
             case TokenType.Mult:
             case TokenType.Div:
             case TokenType.Mod:
-                return 3;
+                return 4;
             case TokenType.Plus:
             case TokenType.Minus:
-                return 2;
+                return 3;
             case TokenType.Concat:
             case TokenType.Bigger:
             case TokenType.BiggerOrEqual:
             case TokenType.Minor:
             case TokenType.MinorOrEqual:
             case TokenType.Comparation:
+                return 2;
+            case TokenType.And:
+            case TokenType.Or:
                 return 1;
             default:
                 return 0;
@@ -186,20 +189,20 @@ class Parser
         {
             if (Current.Text == "let")
             {
-                var let = Match(TokenType.Keyword);
+                Match(TokenType.Keyword);
                 var variableName = Match(TokenType.Identificator);
-                var equal = Match(TokenType.Asignation);
+                Match(TokenType.Asignation);
                 var expression = ParseExpression();
+                if (expression==null) Diagnostics.AddError($"! SYNTAX ERROR: Missing expression in 'let-in' after variable '{variableName.Text}'");
                 if (Current.Type == TokenType.Comma)
                 {
                     Match(TokenType.Comma);
-                    Match(TokenType.Keyword);
                     var variableName2 = Match(TokenType.Identificator);
-                    var equal2 = Match(TokenType.Asignation); ;
+                    Match(TokenType.Asignation); ;
                     var expression2 = ParseExpression();
                     Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName.Text, expression));
                     Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName2.Text, expression2));
-                    var intoken = Match(TokenType.Keyword);
+                    Match(TokenType.Keyword);
                     var inexpression = ParseExpression();
                     return new LetInExpression(variableName, variableName2, expression, expression2, inexpression);
                 }

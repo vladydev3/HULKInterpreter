@@ -21,6 +21,8 @@ public class Lexer
         Tuple.Create(new Regex(">"), TokenType.Bigger),
         Tuple.Create(new Regex("=="), TokenType.Comparation),
         Tuple.Create(new Regex("="), TokenType.Asignation),
+        Tuple.Create(new Regex("&"), TokenType.And),
+        Tuple.Create(new Regex(@"\|"), TokenType.Or),
         Tuple.Create(new Regex(@"\+"), TokenType.Plus),
         Tuple.Create(new Regex(@"\-"), TokenType.Minus),
         Tuple.Create(new Regex(@"\*"), TokenType.Mult),

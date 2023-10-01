@@ -24,7 +24,7 @@ public sealed class UnaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
         else if (OperatorToken.Type == TokenType.Minus)
@@ -35,7 +35,7 @@ public sealed class UnaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
         else if (OperatorToken.Type == TokenType.Plus) return operand;
@@ -76,7 +76,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Minus)
@@ -87,7 +87,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Mult)
@@ -98,7 +98,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Div)
@@ -109,7 +109,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Mod)
@@ -120,7 +120,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Concat)
@@ -131,7 +131,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: At least one of the elements to concatenate must be a string");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: At least one of the elements to concatenate must be a string");
             }
             try
             {
@@ -139,7 +139,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: At least one of the elements to concatenate must be a string");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: At least one of the elements to concatenate must be a string");
             }
         }
         else if (Operator.Type == TokenType.Pow)
@@ -150,7 +150,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
         else if (Operator.Type == TokenType.Comparation)
@@ -161,7 +161,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {$"Semantic Error: {e.Message}"}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {$"! SEMANTIC ERROR: {e.Message}"}");
             }
 
             try
@@ -170,7 +170,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {$"Semantic Error: {e.Message}"}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {$"! SEMANTIC ERROR: {e.Message}"}");
             }
         }
         else if (Operator.Type == TokenType.Bigger)
@@ -181,7 +181,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
         else if (Operator.Type == TokenType.Minor)
@@ -192,7 +192,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
         else if (Operator.Type == TokenType.BiggerOrEqual)
@@ -203,7 +203,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
         else if (Operator.Type == TokenType.MinorOrEqual)
@@ -214,7 +214,29 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Diagnostics.AddError($"Semantic Error: {e.Message}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+            }
+        }
+        else if (Operator.Type == TokenType.Or)
+        {
+            try 
+            {
+                return (bool)left || (bool)right;
+            }
+            catch (Exception e)
+            {
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+            }
+        }
+        else if (Operator.Type == TokenType.And)
+        {
+            try 
+            {
+                return (bool)left && (bool)right;
+            }
+            catch (Exception e)
+            {
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
         

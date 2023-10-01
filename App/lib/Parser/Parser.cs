@@ -88,7 +88,7 @@ class Parser
         var endOfFileToken = Match(TokenType.EOL);
         return new SyntaxTree(Diagnostics, expression, endOfFileToken);
     }
-    private Expression ParseExpression(int parentPrecedence = 0)
+    public Expression ParseExpression(int parentPrecedence = 0)
     {
 
         Expression left;

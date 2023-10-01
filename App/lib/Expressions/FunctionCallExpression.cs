@@ -16,6 +16,8 @@ public class FunctionCallExpression : Expression
 
     public override object EvaluateExpression()
     {
+        object toReturn = null;
+        int index = 0;
         foreach (var item in Evaluator.FunctionsScope)
         {
             if (item.Item1 == Name.Text)
@@ -25,17 +27,24 @@ public class FunctionCallExpression : Expression
                     Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" does not take {Arguments.Count} arguments.");
                     return null;
                 }
-                
-                for (int i=0; i<Arguments.Count; i++)
+
+                for (int i = 0; i < Arguments.Count; i++)
                 {
-                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(item.Item2[i].Text, Arguments[i]));
+                    var a = new Parser(Arguments[i].EvaluateExpression().ToString());
+                    var exp = a.ParseExpression();
+                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(item.Item2[i].Text, exp));
                 }
 
-                return Evaluator.Evaluate(item.Item3);
+                toReturn = Evaluator.Evaluate(item.Item3);
             }
         }
-        Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" is not defined.");
-        return null;
+        if (toReturn == null)
+        {
+            Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" is not defined.");
+            return null;
+        }
+        Evaluator.VariableScope.RemoveAt(Evaluator.VariableScope.Count-1);
+        return toReturn;
     }
 
     public override IEnumerable<Node> GetChildren()

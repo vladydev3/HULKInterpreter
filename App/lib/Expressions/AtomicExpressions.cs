@@ -80,11 +80,11 @@ public sealed class VariableExpression : Expression
 
     public override object EvaluateExpression()
     {
-        foreach (var item in Evaluator.VariableScope)
+        for (int i = Evaluator.VariableScope.Count - 1; i >= 0; i--)
         {
-            if (item.Item1 == VariableName.Text)
+            if (Evaluator.VariableScope[i].Item1 == VariableName.Text)
             {
-                return item.Item2.EvaluateExpression();
+                return Evaluator.VariableScope[i].Item2.EvaluateExpression();
             }
         }
         Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{VariableName.Text}\" is not defined");

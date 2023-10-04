@@ -26,7 +26,6 @@ while (true)
     {
         if (syntaxTree.Root == null) continue;
         var result = Evaluator.Evaluate(syntaxTree.Root);
-        if (syntaxTree.Root.Diagnostics.AnyError()) syntaxTree.Root.Diagnostics.ShowError();
         if (Evaluator.Diagnostics.AnyError()) Evaluator.Diagnostics.ShowError();
         else
         {

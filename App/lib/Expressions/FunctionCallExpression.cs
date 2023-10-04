@@ -17,7 +17,6 @@ public class FunctionCallExpression : Expression
     public override object EvaluateExpression()
     {
         object toReturn = null;
-        int index = 0;
         foreach (var item in Evaluator.FunctionsScope)
         {
             if (item.Item1 == Name.Text)
@@ -43,7 +42,7 @@ public class FunctionCallExpression : Expression
             Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" is not defined.");
             return null;
         }
-        Evaluator.VariableScope.RemoveAt(Evaluator.VariableScope.Count-1);
+        if (Evaluator.VariableScope.Count > 0) Evaluator.VariableScope.RemoveAt(Evaluator.VariableScope.Count-1);
         return toReturn;
     }
 

@@ -23,7 +23,7 @@ public class FunctionCallExpression : Expression
             {
                 if (item.Item2.Count != Arguments.Count)
                 {
-                    Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" does not take {Arguments.Count} arguments.");
+                    Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" take {item.Item2.Count} arguments, not {Arguments.Count}.");
                     return null;
                 }
 

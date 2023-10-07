@@ -244,8 +244,8 @@ class Parser
             {
                 Match(TokenType.LParen);
                 List<Expression> arguments = new();
-                if (Current.Type != TokenType.RParen) arguments.Add(ParseExpression());
-                while (Current.Type != TokenType.RParen)
+                if (Current.Type != TokenType.RParen && Current.Type != TokenType.Error) arguments.Add(ParseExpression());
+                while (Current.Type != TokenType.RParen && Current.Type != TokenType.Error)
                 {
                     Match(TokenType.Comma);
                     arguments.Add(ParseExpression());
@@ -267,7 +267,7 @@ class Parser
         Match(TokenType.LParen);
         List<Token> arguments = new();
         if (Current.Type != TokenType.RParen) arguments.Add(Match(TokenType.Identificator));
-        while (Current.Type != TokenType.RParen)
+        while (Current.Type != TokenType.RParen && Current.Type != TokenType.Error)
         {
             Match(TokenType.Comma);
             arguments.Add(Match(TokenType.Identificator));

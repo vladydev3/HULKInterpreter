@@ -222,6 +222,23 @@ class Parser
                     return new LetInExpression(variablesNames, variablesExpressions, inExpression);
                 }
             }
+            if (Current.Text == "for")
+            {
+                Match(TokenType.Keyword);
+                Match(TokenType.LParen);
+                var identifier = Match(TokenType.Identificator);
+                Match(TokenType.Keyword);
+                Match(TokenType.MathFunctions);
+                Match(TokenType.LParen);
+                var start = ParseExpression();
+                Match(TokenType.Comma);
+                var end = ParseExpression();
+                Match(TokenType.RParen);
+                Match(TokenType.RParen);
+                var body = ParseExpression();
+
+                return new ForExpression(identifier, new RangeExpression(start, end), body);
+            }
             if (Current.Text == "if")
             {
                 List<Expression> elifs = new();

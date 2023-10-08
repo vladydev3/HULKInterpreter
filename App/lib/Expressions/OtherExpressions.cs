@@ -161,3 +161,27 @@ public sealed class LogExpression : Expression
     }
 
 }
+
+public class RangeExpression : Expression
+{
+    public override TokenType Type => TokenType.RangeExpression;
+    public Expression LowerBound { get; }
+    public Expression UpperBound { get; }
+
+    public RangeExpression(Expression lowerBound, Expression upperBound)
+    {
+        LowerBound = lowerBound;
+        UpperBound = upperBound;
+    }
+
+    public override object EvaluateExpression()
+    {
+        return null;
+    }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        yield return LowerBound;
+        yield return UpperBound;
+    }
+}

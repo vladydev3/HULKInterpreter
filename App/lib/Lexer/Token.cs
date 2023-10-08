@@ -35,6 +35,8 @@ public enum TokenType
     WhiteSpace,
     Error,
     // Expressions
+    ForExpression,
+    RangeExpression,
     FunctionExpression,
     IfExpression,
     LetInExpression,

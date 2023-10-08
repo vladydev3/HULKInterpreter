@@ -16,9 +16,9 @@ static class SyntaxFacts
                 return 0;
         }
     }
-    public static int GetBinaryOperatorPrecedence(this TokenType kind)
+    public static int GetBinaryOperatorPrecedence(this TokenType type)
     {
-        switch (kind)
+        switch (type)
         {
             case TokenType.Pow:
                 return 5;
@@ -26,15 +26,15 @@ static class SyntaxFacts
             case TokenType.Div:
                 return 4;
             case TokenType.Plus:
+            case TokenType.Concat:
             case TokenType.Minus:
                 return 3;
-            case TokenType.Concat:
             case TokenType.Bigger:
             case TokenType.BiggerOrEqual:
             case TokenType.Minor:
             case TokenType.MinorOrEqual:
-            case TokenType.Comparation:
             case TokenType.Mod:
+            case TokenType.Comparation:
             case TokenType.Diferent:
                 return 2;
             case TokenType.And:
@@ -81,8 +81,8 @@ class Parser
     {
         if (Current.Type == Type) return NextToken();
 
-        if (Type==TokenType.RParen) Diagnostics.AddError($"! SYNTAX ERROR: Missing closing parenthesis after '{tokens[position-1].Text}'.");
-        else if (Type==TokenType.EOL) Diagnostics.AddError($"! SYNTAX ERROR: ';' expected ");
+        if (Type == TokenType.RParen) Diagnostics.AddError($"! SYNTAX ERROR: Missing closing parenthesis after '{tokens[position - 1].Text}'.");
+        else if (Type == TokenType.EOL) Diagnostics.AddError($"! SYNTAX ERROR: ';' expected ");
         else Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected <{Type}> type.");
 
         return new Token(Type, Current.Position, null, null);
@@ -196,24 +196,27 @@ class Parser
                 var variableName = Match(TokenType.Identificator);
                 Match(TokenType.Asignation);
                 var expression = ParseExpression();
-                if (expression==null) Diagnostics.AddError($"! SYNTAX ERROR: Missing expression in 'let-in' after variable '{variableName.Text}'");
+                if (expression == null) Diagnostics.AddError($"! SYNTAX ERROR: Missing expression in 'let-in' after variable '{variableName.Text}'");
                 if (Current.Type == TokenType.Comma)
                 {
-                    Match(TokenType.Comma);
-                    var variableName2 = Match(TokenType.Identificator);
-                    Match(TokenType.Asignation); ;
-                    var expression2 = ParseExpression();
-                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName.Text, expression));
-                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName2.Text, expression2));
-                    Match(TokenType.Keyword);
-                    var inexpression = ParseExpression();
-                    return new LetInExpression(variableName, variableName2, expression, expression2, inexpression);
+                    while (Current.Type == TokenType.Comma)
+                    {
+                        Match(TokenType.Comma);
+                        var variableName2 = Match(TokenType.Identificator);
+                        Match(TokenType.Asignation); ;
+                        var expression2 = ParseExpression();
+                        Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName.Text, expression));
+                        Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName2.Text, expression2));
+                        Match(TokenType.Keyword);
+                        var inexpression = ParseExpression();
+                        return new LetInExpression(variableName, variableName2, expression, expression2, inexpression);
+                    }
                 }
                 else
                 {
                     Match(TokenType.Keyword);
-                    var inExpression = ParseExpression();
                     Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName.Text, expression));
+                    var inExpression = ParseExpression();
                     return new LetInExpression(variableName, null, expression, null, inExpression);
                 }
 

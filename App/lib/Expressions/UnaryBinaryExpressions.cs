@@ -163,7 +163,7 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {$"! SEMANTIC ERROR: {e.Message}"}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
 
             try
@@ -174,7 +174,18 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {$"! SEMANTIC ERROR: {e.Message}"}");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+            }
+            try
+            {
+                var toReturn = (string)left == (string)right;
+                Evaluator.Diagnostics.RemoveError();
+                Evaluator.Diagnostics.RemoveError();
+                return toReturn;
+            }
+            catch (Exception e)
+            {
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
         else if (Operator.Type == TokenType.Diferent)
@@ -244,7 +255,7 @@ public sealed class BinaryExpression : Expression
         }
         else if (Operator.Type == TokenType.Or)
         {
-            try 
+            try
             {
                 return (bool)left || (bool)right;
             }
@@ -255,7 +266,7 @@ public sealed class BinaryExpression : Expression
         }
         else if (Operator.Type == TokenType.And)
         {
-            try 
+            try
             {
                 return (bool)left && (bool)right;
             }
@@ -264,7 +275,7 @@ public sealed class BinaryExpression : Expression
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
-        
+
         return null;
     }
 

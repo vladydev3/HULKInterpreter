@@ -30,8 +30,15 @@ public class FunctionCallExpression : Expression
 
                 for (int i = 0; i < Arguments.Count; i++)
                 {
-                    var a = new Parser(Arguments[i].EvaluateExpression().ToString());
+                    var argument = Arguments[i].EvaluateExpression();
+                    var a = new Parser(argument.ToString());
                     var exp = a.ParseExpression();
+
+                    if (InferenceTypes.GetInferenceType(item.Item3) != InferenceTypes.GetInferenceType(argument))
+                    {
+                        Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" receives {InferenceTypes.GetInferenceType(item.Item3)} argument, but {InferenceTypes.GetInferenceType(argument)} was given.");
+                        return null;
+                    }
 
                     Evaluator.VariableScope.Add(new Tuple<string, Expression>(item.Item2[i].Text, exp));
                     change = true;

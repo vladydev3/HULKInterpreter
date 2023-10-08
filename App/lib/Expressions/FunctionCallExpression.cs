@@ -17,13 +17,14 @@ public class FunctionCallExpression : Expression
     public override object EvaluateExpression()
     {
         object toReturn = null;
+        bool change = false;
         foreach (var item in Evaluator.FunctionsScope)
         {
             if (item.Item1 == Name.Text)
             {
                 if (item.Item2.Count != Arguments.Count)
                 {
-                    Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" take {item.Item2.Count} arguments, not {Arguments.Count}.");
+                    Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" receives {item.Item2.Count} arguments, but {Arguments.Count} were given.");
                     return null;
                 }
 
@@ -31,10 +32,12 @@ public class FunctionCallExpression : Expression
                 {
                     var a = new Parser(Arguments[i].EvaluateExpression().ToString());
                     var exp = a.ParseExpression();
-                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(item.Item2[i].Text, exp));
-                }
 
+                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(item.Item2[i].Text, exp));
+                    change = true;
+                }
                 toReturn = Evaluator.Evaluate(item.Item3);
+
             }
         }
         if (toReturn == null)
@@ -42,7 +45,7 @@ public class FunctionCallExpression : Expression
             Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" is not defined.");
             return null;
         }
-        if (Evaluator.VariableScope.Count > 0) Evaluator.VariableScope.RemoveAt(Evaluator.VariableScope.Count-1);
+        if (change) Evaluator.VariableScope.RemoveAt(Evaluator.VariableScope.Count - 1);
         return toReturn;
     }
 

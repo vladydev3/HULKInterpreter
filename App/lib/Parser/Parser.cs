@@ -82,6 +82,7 @@ class Parser
         if (Current.Type == Type) return NextToken();
 
         if (Type==TokenType.RParen) Diagnostics.AddError($"! SYNTAX ERROR: Missing closing parenthesis after '{tokens[position-1].Text}'.");
+        else if (Type==TokenType.EOL) Diagnostics.AddError($"! SYNTAX ERROR: ';' expected ");
         else Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected <{Type}> type.");
 
         return new Token(Type, Current.Position, null, null);

@@ -123,7 +123,7 @@ public class Lexer
 
             if (!matchFound)
             {
-                diagnostics.AddError($"! LEXICAL ERROR: invalid token");
+                diagnostics.AddError($"! LEXICAL ERROR: {code.Substring(currentIndex, len)} invalid token");
 
                 tokens.Add(new Token(TokenType.Error, currentIndex++, null, null));
             }

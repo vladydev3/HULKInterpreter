@@ -74,7 +74,7 @@ public sealed class BinaryExpression : Expression
             {
                 return (double)left + (double)right;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
             }

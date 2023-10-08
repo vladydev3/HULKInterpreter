@@ -33,8 +33,11 @@ public class FunctionCallExpression : Expression
                     var argument = Arguments[i].EvaluateExpression();
                     var a = new Parser(argument.ToString());
                     var exp = a.ParseExpression();
-
-                    if (InferenceTypes.GetInferenceType(item.Item3) != InferenceTypes.GetInferenceType(argument))
+                    
+                    var func = InferenceTypes.GetInferenceType(item.Item3);
+                    var arg = InferenceTypes.GetInferenceType(argument);
+                    
+                    if (func != arg && func != InferenceType.Any)
                     {
                         Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" receives {InferenceTypes.GetInferenceType(item.Item3)} argument, but {InferenceTypes.GetInferenceType(argument)} was given.");
                         return null;
@@ -53,6 +56,7 @@ public class FunctionCallExpression : Expression
             return null;
         }
         if (change) Evaluator.VariableScope.RemoveAt(Evaluator.VariableScope.Count - 1);
+        Evaluator.PrintResult = true;
         return toReturn;
     }
 

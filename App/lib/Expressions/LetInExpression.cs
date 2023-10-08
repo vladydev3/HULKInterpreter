@@ -3,18 +3,14 @@ namespace hulk;
 public sealed class LetInExpression : Expression
 {
     public override TokenType Type => TokenType.LetInExpression;
-    public Token VariableName1;
-    public Token VariableName2;
-    public Expression Value1;
-    public Expression Value2;
+    public List<Token> VariablesNames;
+    public List<Expression> Values;
     public Expression InExpression;
 
-    public LetInExpression(Token variableName1, Token variableName2, Expression value1, Expression value2, Expression inExpression)
+    public LetInExpression(List<Token> variablesNames, List<Expression> values, Expression inExpression)
     {
-        VariableName1 = variableName1;
-        VariableName2 = variableName2;
-        Value1 = value1;
-        Value2 = value2;
+        VariablesNames = variablesNames;
+        Values = values;
         InExpression = inExpression;
     }
 
@@ -25,10 +21,14 @@ public sealed class LetInExpression : Expression
 
     public override IEnumerable<Node> GetChildren()
     {
-        yield return VariableName1;
-        yield return VariableName2;
-        yield return Value1;
-        yield return Value2;
+        foreach (var item in VariablesNames)
+        {
+            yield return item;
+        }
+        foreach (var item in Values)
+        {
+            yield return item;
+        }
         yield return InExpression;
     }
 }

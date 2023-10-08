@@ -43,6 +43,7 @@ public class PrintExpression : Expression
     {
         try
         {
+            Evaluator.PrintResult = true;
             return Evaluator.Evaluate(ExpressionInside);
         }
         catch (Exception e)

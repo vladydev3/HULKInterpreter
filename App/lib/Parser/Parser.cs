@@ -192,46 +192,57 @@ class Parser
         {
             if (Current.Text == "let")
             {
+                List<Token> variablesNames = new();
+                List<Expression> variablesExpressions = new();
                 Match(TokenType.Keyword);
-                var variableName = Match(TokenType.Identificator);
+                variablesNames.Add(Match(TokenType.Identificator));
                 Match(TokenType.Asignation);
-                var expression = ParseExpression();
-                if (expression == null) Diagnostics.AddError($"! SYNTAX ERROR: Missing expression in 'let-in' after variable '{variableName.Text}'");
+                variablesExpressions.Add(ParseExpression());
+                if (variablesNames[0] == null) Diagnostics.AddError($"! SYNTAX ERROR: Missing expression in 'let-in' after variable '{variablesNames[0].Text}'");
+                Evaluator.VariableScope.Add(new Tuple<string, Expression>(variablesNames[0].Text, variablesExpressions[0]));
                 if (Current.Type == TokenType.Comma)
                 {
                     while (Current.Type == TokenType.Comma)
                     {
                         Match(TokenType.Comma);
-                        var variableName2 = Match(TokenType.Identificator);
+                        variablesNames.Add(Match(TokenType.Identificator));
                         Match(TokenType.Asignation); ;
-                        var expression2 = ParseExpression();
-                        Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName.Text, expression));
-                        Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName2.Text, expression2));
-                        Match(TokenType.Keyword);
-                        var inexpression = ParseExpression();
-                        return new LetInExpression(variableName, variableName2, expression, expression2, inexpression);
+                        variablesExpressions.Add(ParseExpression());
+                        Evaluator.VariableScope.Add(new Tuple<string, Expression>(variablesNames[variablesNames.Count - 1].Text, variablesExpressions[variablesExpressions.Count - 1]));
                     }
+                    Match(TokenType.Keyword);
+                    var inexpression = ParseExpression();
+
+                    return new LetInExpression(variablesNames, variablesExpressions, inexpression);
                 }
                 else
                 {
                     Match(TokenType.Keyword);
-                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(variableName.Text, expression));
                     var inExpression = ParseExpression();
-                    return new LetInExpression(variableName, null, expression, null, inExpression);
+                    return new LetInExpression(variablesNames, variablesExpressions, inExpression);
                 }
-
             }
             if (Current.Text == "if")
             {
+                List<Expression> elifs = new();
+                List<Expression> elifcondition = new();
                 Match(TokenType.Keyword);
                 Match(TokenType.LParen);
                 var condition = ParseExpression();
                 Match(TokenType.RParen);
                 var ifexpression = ParseExpression();
+                while (Current.Type == TokenType.Elif)
+                {
+                    Match(TokenType.Elif);
+                    Match(TokenType.LParen);
+                    elifcondition.Add(ParseExpression());
+                    Match(TokenType.RParen);
+                    elifs.Add(ParseExpression());
+                }
                 Match(TokenType.Else);
                 var elseexpression = ParseExpression();
 
-                return new IfExpression(condition, ifexpression, elseexpression);
+                return new IfExpression(condition, ifexpression, elifcondition, elifs, elseexpression);
             }
             if (Current.Text == "function")
             {

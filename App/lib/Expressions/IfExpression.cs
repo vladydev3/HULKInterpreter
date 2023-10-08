@@ -6,12 +6,16 @@ public class IfExpression : Expression
     public override TokenType Type => TokenType.IfExpression;
     public Expression Condition;
     public Expression ifExpression;
+    public List<Expression> ElifCondition;
+    public List<Expression> ElifExpression;
     public Expression ElseExpression;
 
-    public IfExpression(Expression condition, Expression ifexpression, Expression elseExpression)
+    public IfExpression(Expression condition, Expression ifexpression, List<Expression> elifCondition, List<Expression> elifExpression, Expression elseExpression)
     {
         Condition = condition;
         ifExpression = ifexpression;
+        ElifCondition = elifCondition;
+        ElifExpression = elifExpression;
         ElseExpression = elseExpression;
     }
 
@@ -19,9 +23,16 @@ public class IfExpression : Expression
     {
         try
         {
-            if((bool)Evaluator.Evaluate(Condition))
+            if ((bool)Evaluator.Evaluate(Condition))
             {
                 return Evaluator.Evaluate(ifExpression);
+            }
+            for (int i = 0; i < ElifCondition.Count; i++)
+            {
+                if ((bool)Evaluator.Evaluate(ElifCondition[i]))
+                {
+                    return Evaluator.Evaluate(ElifExpression[i]);
+                }
             }
             return Evaluator.Evaluate(ElseExpression);
         }
@@ -36,6 +47,14 @@ public class IfExpression : Expression
     {
         yield return Condition;
         yield return ifExpression;
+        foreach (var elif in ElifCondition)
+        {
+            yield return elif;
+        }
+        foreach (var elif in ElifExpression)
+        {
+            yield return elif;
+        }
         yield return ElseExpression;
     }
 }

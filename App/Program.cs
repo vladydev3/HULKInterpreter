@@ -9,6 +9,7 @@ Console.ForegroundColor = clr;
 while (true)
 {
     Evaluator.VariableScope = new List<Tuple<string, Expression>>();
+    Evaluator.PrintResult = false;
     Console.Write("> ");
     string code = Console.ReadLine();
     if (string.IsNullOrWhiteSpace(code)) return;
@@ -24,12 +25,13 @@ while (true)
     if (syntaxTree.Diagnostics.AnyError()) syntaxTree.Diagnostics.ShowError();
     else
     {
-        if (syntaxTree.Root == null) continue;
+        if (syntaxTree.Root == null) continue;   
         var result = Evaluator.Evaluate(syntaxTree.Root);
+
         if (Evaluator.Diagnostics.AnyError()) Evaluator.Diagnostics.ShowError();
         else
         {
-            if (result != null)
+            if (result != null && Evaluator.PrintResult)
             {
                 Console.WriteLine(result);
             }

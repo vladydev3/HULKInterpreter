@@ -15,6 +15,7 @@ public enum TokenType
     MathFunctions,
     Print,
     Else,
+    Elif,
     Or,
     And,
     Comparation,

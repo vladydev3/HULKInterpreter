@@ -176,6 +176,21 @@ public class RangeExpression : Expression
 
     public override object EvaluateExpression()
     {
+        try
+        {
+            var lower = (double)Evaluator.Evaluate(LowerBound);
+            var upper = (double)Evaluator.Evaluate(UpperBound);
+            var range = new List<double>((int)(upper - lower));
+            for (var i = lower; i < upper; i++)
+            {
+                range.Add(i);
+            }
+            return range;
+        }
+        catch (Exception e)
+        {
+            Diagnostics.AddError($"Semantic Error: {e.Message}");
+        }
         return null;
     }
 

@@ -29,6 +29,8 @@ public enum TokenType
     Boolean,
     Identificator,
     LParen,
+    LBracket,
+    RBracket,
     RParen,
     Parenthesis,
     Comma,
@@ -36,6 +38,7 @@ public enum TokenType
     Error,
     // Expressions
     ForExpression,
+    VectorExpression,
     RangeExpression,
     FunctionExpression,
     IfExpression,

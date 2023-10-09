@@ -13,6 +13,8 @@ public class Lexer
     {
         Tuple.Create(new Regex(@"\("), TokenType.LParen),
         Tuple.Create(new Regex(@"\)"), TokenType.RParen),
+        Tuple.Create(new Regex(@"\["), TokenType.LBracket),
+        Tuple.Create(new Regex(@"\]"), TokenType.RBracket),
         Tuple.Create(new Regex(@"(?:\d+(?:\.\d*)?|\.\d+)"), TokenType.Number),
         Tuple.Create(new Regex("true|false"), TokenType.Boolean),
         Tuple.Create(new Regex("!="), TokenType.Diferent),
@@ -31,7 +33,7 @@ public class Lexer
         Tuple.Create(new Regex(@"\%"), TokenType.Mod),
         Tuple.Create(new Regex(@"\^"), TokenType.Pow),
         Tuple.Create(new Regex(@"\@"), TokenType.Concat),
-        Tuple.Create(new Regex("PI|sin|cos|log|range|exp|rand|sqrt|E"), TokenType.MathFunctions),
+        Tuple.Create(new Regex(".next|.current|.size|PI|sin|cos|log|range|exp|rand|sqrt|E"), TokenType.MathFunctions),
         Tuple.Create(new Regex(@"\bprint"), TokenType.Print),
         Tuple.Create(new Regex(@"\bin\b"), TokenType.Keyword),
         Tuple.Create(new Regex(@"\blet\b"), TokenType.Keyword),

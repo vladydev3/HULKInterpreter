@@ -96,3 +96,89 @@ public sealed class VariableExpression : Expression
         yield return VariableName;
     }
 }
+
+public class VectorExpression : Expression
+{
+    public override TokenType Type => TokenType.VectorExpression;
+    public List<Expression> Elements { get; }
+    public int Current { get; set; }
+    public bool Next { get; set;}
+
+    public VectorExpression(List<Expression> elements)
+    {
+        Elements = elements;
+    }
+
+    public object GetCurrent(Token name)
+    {
+        return GetElement(name, Current);
+    }
+
+    public bool GetNext(Token name)
+    {
+        if (Current < Elements.Count)
+        {
+            Current++;
+            return true;
+        }
+        return false;
+    }
+
+    public static VectorExpression GetVector(Token name)
+    {
+        try
+        {
+            for (int i = Evaluator.VariableScope.Count - 1; i >= 0; i--)
+            {
+                if (Evaluator.VariableScope[i].Item1 == name.Text)
+                {
+                    return (VectorExpression)Evaluator.VariableScope[i].Item2;
+                }
+            }
+            Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{name.Text}\" is not defined");
+        }
+        catch (Exception)
+        {
+            Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{name.Text}\" is not a vector");
+        }
+        return null;
+    }
+
+    public static object GetElement(Token name, int index)
+    {
+        try
+        {
+            for (int i = Evaluator.VariableScope.Count - 1; i >= 0; i--)
+            {
+                if (Evaluator.VariableScope[i].Item1 == name.Text)
+                {
+                    return ((List<object>)Evaluator.VariableScope[i].Item2.EvaluateExpression())[index];
+                }
+            }
+            Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{name.Text}\" is not defined");
+        }
+        catch (Exception)
+        {
+            Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{name.Text}\" is not a vector");
+        }
+        return null;
+    }
+
+    public override List<object> EvaluateExpression()
+    {
+        var vector = new List<object>();
+        foreach (var element in Elements)
+        {
+            vector.Add(Evaluator.Evaluate(element));
+        }
+        return vector;
+    }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        foreach (var element in Elements)
+        {
+            yield return element;
+        }
+    }
+}

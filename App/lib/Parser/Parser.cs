@@ -121,6 +121,21 @@ class Parser
 
     private Expression? ParsePrimaryExpression()
     {
+        if (Current.Type == TokenType.LBracket)
+        {
+            Match(TokenType.LBracket);
+            List<Expression> elements = new();
+            if (Current.Type != TokenType.RBracket) elements.Add(ParseExpression());
+            while (Current.Type != TokenType.RBracket)
+            {
+                Match(TokenType.Comma);
+                elements.Add(ParseExpression());
+            }
+            Match(TokenType.RBracket);
+
+            return new VectorExpression(elements);
+        }
+
         if (Current.Type == TokenType.LParen)
         {
             var left = NextToken();
@@ -197,7 +212,9 @@ class Parser
                 Match(TokenType.Keyword);
                 variablesNames.Add(Match(TokenType.Identificator));
                 Match(TokenType.Asignation);
+
                 variablesExpressions.Add(ParseExpression());
+                
                 if (variablesNames[0] == null) Diagnostics.AddError($"! SYNTAX ERROR: Missing expression in 'let-in' after variable '{variablesNames[0].Text}'");
                 Evaluator.VariableScope.Add(new Tuple<string, Expression>(variablesNames[0].Text, variablesExpressions[0]));
                 if (Current.Type == TokenType.Comma)
@@ -228,16 +245,27 @@ class Parser
                 Match(TokenType.LParen);
                 var identifier = Match(TokenType.Identificator);
                 Match(TokenType.Keyword);
-                Match(TokenType.MathFunctions);
-                Match(TokenType.LParen);
-                var start = ParseExpression();
-                Match(TokenType.Comma);
-                var end = ParseExpression();
-                Match(TokenType.RParen);
-                Match(TokenType.RParen);
-                var body = ParseExpression();
+                if (Current.Type == TokenType.Identificator)
+                {
+                    var name = Match(TokenType.Identificator);
+                    Match(TokenType.RParen);
+                    var body = ParseExpression();
 
-                return new ForExpression(identifier, new RangeExpression(start, end), body);
+                    return new ForExpression(identifier, null, name, body);
+                }
+                else
+                {
+                    Match(TokenType.MathFunctions);
+                    Match(TokenType.LParen);
+                    var start = ParseExpression();
+                    Match(TokenType.Comma);
+                    var end = ParseExpression();
+                    Match(TokenType.RParen);
+                    Match(TokenType.RParen);
+                    var body = ParseExpression();
+                    return new ForExpression(identifier, new RangeExpression(start, end), null, body);
+                }
+
             }
             if (Current.Text == "if")
             {
@@ -284,6 +312,42 @@ class Parser
                 }
                 Match(TokenType.RParen);
                 return new FunctionCallExpression(name, arguments);
+            }
+
+            if (Current.Type == TokenType.LBracket)
+            {
+                Match(TokenType.LBracket);
+                var index = ParseExpression();
+                Match(TokenType.RBracket);
+
+                return new NumberExpression(new Token(TokenType.Number, 0, VectorExpression.GetElement(name, int.Parse(Evaluator.Evaluate(index).ToString())).ToString(), VectorExpression.GetElement(name, int.Parse(Evaluator.Evaluate(index).ToString()))));
+            }
+
+            if (Current.Text == ".current")
+            {
+                Match(TokenType.MathFunctions);
+                Match(TokenType.LParen);
+                Match(TokenType.RParen);
+
+                return new NumberExpression(new Token(TokenType.Number, 0, VectorExpression.GetVector(name).GetCurrent(name).ToString(), VectorExpression.GetVector(name).GetCurrent(name)));
+            }
+
+            if (Current.Text == ".next")
+            {
+                Match(TokenType.MathFunctions);
+                Match(TokenType.LParen);
+                Match(TokenType.RParen);
+
+                return new BooleanExpression(new Token(TokenType.Boolean, 0, null, VectorExpression.GetVector(name).GetNext(name)));
+            }
+
+            if (Current.Text == ".size")
+            {
+                Match(TokenType.MathFunctions);
+                Match(TokenType.LParen);
+                Match(TokenType.RParen);
+
+                return new NumberExpression(new Token(TokenType.Number, 0, VectorExpression.GetVector(name).Elements.Count.ToString(), VectorExpression.GetVector(name).Elements.Count));
             }
 
             return new VariableExpression(name);

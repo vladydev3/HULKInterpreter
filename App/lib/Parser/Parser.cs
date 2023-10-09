@@ -294,6 +294,16 @@ class Parser
                 ParseFunctionExpression();
                 return null;
             }
+            if (Current.Text == "while")
+            {
+                Match(TokenType.Keyword);
+                Match(TokenType.LParen);
+                var condition = ParseExpression();
+                Match(TokenType.RParen);
+                var body = ParseExpression();
+
+                return new WhileExpression(condition, body);
+            }
         }
 
         if (Current.Type == TokenType.Identificator)

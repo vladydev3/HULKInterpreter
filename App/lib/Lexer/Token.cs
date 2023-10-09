@@ -41,6 +41,7 @@ public enum TokenType
     VectorExpression,
     RangeExpression,
     FunctionExpression,
+    WhileExpression,
     IfExpression,
     LetInExpression,
     PrintExpression,

@@ -16,6 +16,12 @@ public class FunctionCallExpression : Expression
 
     public override object EvaluateExpression()
     {
+        if (Evaluator.StackPointer >= 1000)
+        {
+            Evaluator.Diagnostics.AddError("! Stack Overflow.");
+            return null;
+        }
+        Evaluator.StackPointer++;
         object toReturn = null;
         bool change = false;
         foreach (var item in Evaluator.FunctionsScope)

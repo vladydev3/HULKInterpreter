@@ -65,8 +65,8 @@ public sealed class BinaryExpression : Expression
 
     public override object EvaluateExpression()
     {
-        object? left = Evaluator.Evaluate(Left);
-        object? right = Evaluator.Evaluate(Right);
+        object left = Evaluator.Evaluate(Left);
+        object right = Evaluator.Evaluate(Right);
 
         if (Operator.Type == TokenType.Plus)
         {
@@ -76,7 +76,10 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception)
             {
-                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                else if (right == null && left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between 'null' and 'null'.");
+                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between '{left.GetType()}' and 'null'.");
+                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between 'null' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Minus)
@@ -87,7 +90,9 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' cannot be used between '{left.GetType()}' and 'null'.");
+                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' cannot be used between 'null' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Mult)
@@ -98,7 +103,9 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' cannot be used between '{left.GetType()}' and 'null'.");
+                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' cannot be used between 'null' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Div)
@@ -109,7 +116,9 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' cannot be used between '{left.GetType()}' and 'null'.");
+                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' cannot be used between 'null' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Mod)
@@ -120,7 +129,9 @@ public sealed class BinaryExpression : Expression
             }
             catch (Exception e)
             {
-                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
+                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' cannot be used between '{left.GetType()}' and 'null'.");
+                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' cannot be used between 'null' and '{right.GetType()}'.");
             }
         }
         else if (Operator.Type == TokenType.Concat)

@@ -40,6 +40,7 @@ public class Lexer
         Tuple.Create(new Regex(@"\bif"), TokenType.Keyword),
         Tuple.Create(new Regex(@"\bfunction"), TokenType.Keyword),
         Tuple.Create(new Regex(@"\bfor"), TokenType.Keyword),
+        Tuple.Create(new Regex(@"\bwhile"), TokenType.Keyword),
         Tuple.Create(new Regex(@"\belse\b"), TokenType.Else),
         Tuple.Create(new Regex(@"\belif\b"), TokenType.Elif),
         Tuple.Create(new Regex(@"\b[a-zA-Z_]\w*\b"), TokenType.Identificator),

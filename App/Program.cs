@@ -10,6 +10,7 @@ while (true)
 {
     Evaluator.VariableScope = new List<Tuple<string, Expression>>();
     Evaluator.PrintResult = false;
+    Evaluator.StackPointer = 0;
     Console.Write("> ");
     string code = Console.ReadLine();
     if (string.IsNullOrWhiteSpace(code)) return;

@@ -102,7 +102,6 @@ public class VectorExpression : Expression
     public override TokenType Type => TokenType.VectorExpression;
     public List<Expression> Elements { get; }
     public int Current { get; set; }
-    public bool Next { get; set;}
 
     public VectorExpression(List<Expression> elements)
     {
@@ -116,12 +115,7 @@ public class VectorExpression : Expression
 
     public bool GetNext(Token name)
     {
-        if (Current < Elements.Count)
-        {
-            Current++;
-            return true;
-        }
-        return false;
+        return ++Current < Elements.Count;
     }
 
     public static VectorExpression GetVector(Token name)

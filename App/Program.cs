@@ -8,7 +8,7 @@ Console.WriteLine($"-----------------------------");
 Console.ForegroundColor = clr;
 while (true)
 {
-    Evaluator.VariableScope = new List<Tuple<string, Expression>>();
+    Evaluator.VariableScope = new List<Tuple<string, Expression, int>>();
     Evaluator.PrintResult = false;
     Evaluator.StackPointer = 0;
     Console.Write("> ");

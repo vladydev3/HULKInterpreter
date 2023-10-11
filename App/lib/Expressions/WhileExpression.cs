@@ -18,7 +18,7 @@ public class WhileExpression : Expression
         string returnWhile = "";
         while ((bool)Evaluator.Evaluate(condition))
         {
-           returnWhile += Evaluator.Evaluate(body).ToString() + "\n";
+            returnWhile += Evaluator.Evaluate(body).ToString() + "\n";
         }
         return returnWhile;
     }

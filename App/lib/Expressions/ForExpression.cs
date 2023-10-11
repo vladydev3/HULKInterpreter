@@ -6,11 +6,11 @@ public class ForExpression : Expression
 {
     public override TokenType Type => TokenType.ForExpression;
     public Token Identifier { get; }
-    public RangeExpression Range { get; }
+    public RangeFunction Range { get; }
     public Token VectorName { get; }
     public Expression Body { get; }
 
-    public ForExpression(Token identifier, RangeExpression range, Token vectorName, Expression body)
+    public ForExpression(Token identifier, RangeFunction range, Token vectorName, Expression body)
     {
         Identifier = identifier;
         Range = range;
@@ -31,7 +31,7 @@ public class ForExpression : Expression
                 var upper = int.Parse(Evaluator.Evaluate(Range.UpperBound).ToString());
                 for (int i = lower; i < upper; i++)
                 {
-                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(Identifier.Text, new NumberExpression(new Token(TokenType.Number, i, i.ToString(), double.Parse(i.ToString())))));
+                    Evaluator.VariableScope.Add(new Tuple<string, Expression, int>(Identifier.Text, new NumberExpression(new Token(TokenType.Number, i, i.ToString(), double.Parse(i.ToString()))), Evaluator.VariablePointer++));
                     if (i == upper - 1) returnFor += Evaluator.Evaluate(Body).ToString();
                     else returnFor += Evaluator.Evaluate(Body).ToString() + "\n";
                     Evaluator.VariableScope.Remove(Evaluator.VariableScope.Last());
@@ -57,7 +57,7 @@ public class ForExpression : Expression
                 }
                 for (int i = 0; i < vector.Count; i++)
                 {
-                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(Identifier.Text, new NumberExpression(new Token(TokenType.Number, i, vector[i].ToString(), double.Parse(vector[i].ToString())))));
+                    Evaluator.VariableScope.Add(new Tuple<string, Expression,int>(Identifier.Text, new NumberExpression(new Token(TokenType.Number, i, vector[i].ToString(), double.Parse(vector[i].ToString()))), Evaluator.VariablePointer++));
                     if (i == vector.Count - 1) returnFor += Evaluator.Evaluate(Body).ToString();
                     else returnFor += Evaluator.Evaluate(Body).ToString() + "\n";
                     Evaluator.VariableScope.Remove(Evaluator.VariableScope.Last());

@@ -30,7 +30,7 @@ public class InferenceTypes
         if (token.Type == TokenType.And || token.Type == TokenType.Or || token.Type == TokenType.Diferent) return InferenceType.Bool;
         if (token.Type == TokenType.Identificator)
         {
-            foreach (Tuple<string, Expression> item in Evaluator.VariableScope)
+            foreach (Tuple<string, Expression, int> item in Evaluator.VariableScope)
             {
                 if (item.Item1 == token.Text)
                 {
@@ -39,7 +39,7 @@ public class InferenceTypes
             }
             return InferenceType.Any;
         }
-        return InferenceType.None;
+        return InferenceType.Any;
     }
 
     public static InferenceType GetInferenceType(Expression expression)
@@ -57,32 +57,30 @@ public class InferenceTypes
         }
         if (expression is BinaryExpression binaryExpression)
         {
-            // var left = GetInferenceType(binaryExpression.Left);
-            // var right = GetInferenceType(binaryExpression.Right);
-            // if (left == right) return left;
-            // if (left == InferenceType.Any) return right;
-            // if (right == InferenceType.Any) return left;
-
             return GetInferenceType(binaryExpression.Operator);
         }
         if (expression is FunctionCallExpression functionCallExpression)
         {
-            foreach (var item in Evaluator.FunctionsScope)
-            {
-                if (item.Item1 == functionCallExpression.Name.Text)
-                {
-                    return GetInferenceType(item.Item3);
-                }
-            }
             return InferenceType.Any;
         }
         if (expression is IfExpression ifExpression)
         {
-            var condition = GetInferenceType(ifExpression.Condition);
             var ifexp = GetInferenceType(ifExpression.ifExpression);
             var elseexp = GetInferenceType(ifExpression.ElseExpression);
             if (ifexp == elseexp) return ifexp;
-            if (ifexp == InferenceType.Any) return elseexp;
+            if (elseexp == InferenceType.Any) return ifexp;
+            return InferenceType.Any;
+        }
+        if (expression is ForExpression forExpression)
+        {
+            var forexp = GetInferenceType(forExpression.Body);
+            if (forexp == InferenceType.Any) return forexp;
+            return InferenceType.Any;
+        }
+        if (expression is WhileExpression whileExpression)
+        {
+            var whileexp = GetInferenceType(whileExpression.body);
+            if (whileexp == InferenceType.Any) return whileexp;
             return InferenceType.Any;
         }
         return InferenceType.None;

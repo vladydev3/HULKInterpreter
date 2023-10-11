@@ -8,14 +8,14 @@ public class BasicExpressions
     public void String()
     {
         // Arrange
-        string code = "print(\"Hello\");";
+        string code = "print(\"Esta oracion con mas de 1024 caracteres para ver si no hay overflow, esta oracion con mas de 1024 caracteres para ver si no hay overflow, Esta oracion con mas de 356 caracteres para ver si no hay overflow, Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,\" @ \": prueba overflow ok\");";
         var tree = SyntaxTree.Parse(code);
 
         // Act
         var result = Evaluator.Evaluate(tree.Root);
 
         // Assert
-        Assert.AreEqual("Hello", result);
+        Assert.AreEqual("Esta oracion con mas de 1024 caracteres para ver si no hay overflow, esta oracion con mas de 1024 caracteres para ver si no hay overflow, Esta oracion con mas de 356 caracteres para ver si no hay overflow, Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,: prueba overflow ok", result);
     }
 
     [Test]
@@ -38,6 +38,18 @@ public class BasicExpressions
         var result = Evaluator.Evaluate(tree.Root);
 
         Assert.AreEqual(-1, result);
+    }
+
+    [Test]
+    public void LetIn()
+    {
+        string code = "let a =( let b = 5 in b ) in a+b;";
+        var tree = SyntaxTree.Parse(code);
+
+        var result = Evaluator.Evaluate(tree.Root);
+        var error = Evaluator.Diagnostics.AnyError();
+
+        Assert.AreEqual(true, error);
     }
 }
 
@@ -77,6 +89,27 @@ public class Functions
         var result2 = Evaluator.Evaluate(tree3.Root);
 
         Assert.AreEqual(13, result2);
+    }
+
+    [Test]
+    public void Recursion2()
+    {
+        string code = "function mcd(a,b) => if (a % b ==0) b else mcd(b, a%b);";
+        var tree = SyntaxTree.Parse(code);
+
+        Assert.AreEqual(false, tree.Diagnostics.AnyError());
+
+        string code2 = "mcd(36, 24);";
+        var tree2 = SyntaxTree.Parse(code2);
+        var result = Evaluator.Evaluate(tree2.Root);
+
+        Assert.AreEqual(12, result);
+
+        string code3 = "mcd(8, 4);";
+        var tree3 = SyntaxTree.Parse(code3);
+        var result2 = Evaluator.Evaluate(tree3.Root);
+
+        Assert.AreEqual(4, result2);
     }
 }
 

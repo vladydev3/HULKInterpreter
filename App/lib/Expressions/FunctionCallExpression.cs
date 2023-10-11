@@ -23,9 +23,10 @@ public class FunctionCallExpression : Expression
         }
         Evaluator.StackPointer++;
         object toReturn = null;
-        bool change = false;
+        int count = 0;
         foreach (var item in Evaluator.FunctionsScope)
         {
+            List<Tuple<string, Expression,int>> temp = new();
             if (item.Item1 == Name.Text)
             {
                 if (item.Item2.Count != Arguments.Count)
@@ -39,21 +40,21 @@ public class FunctionCallExpression : Expression
                     var argument = Arguments[i].EvaluateExpression();
                     var a = new Parser(argument.ToString());
                     var exp = a.ParseExpression();
-                    
+
                     var func = InferenceTypes.GetInferenceType(item.Item3);
                     var arg = InferenceTypes.GetInferenceType(argument);
-                    
+
                     if (func != arg && func != InferenceType.Any)
                     {
                         Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" receives {InferenceTypes.GetInferenceType(item.Item3)} argument, but {InferenceTypes.GetInferenceType(argument)} was given.");
                         return null;
                     }
 
-                    Evaluator.VariableScope.Add(new Tuple<string, Expression>(item.Item2[i].Text, exp));
-                    change = true;
+                    temp.Add(new Tuple<string, Expression,int>(item.Item2[i].Text, exp, ++Evaluator.VariablePointer));
+                    count++;
                 }
+                Evaluator.VariableScope.AddRange(temp);
                 toReturn = Evaluator.Evaluate(item.Item3);
-
             }
         }
         if (toReturn == null)
@@ -61,7 +62,13 @@ public class FunctionCallExpression : Expression
             Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" is not defined.");
             return null;
         }
-        if (change) Evaluator.VariableScope.RemoveAt(Evaluator.VariableScope.Count - 1);
+        if (count > 0)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Evaluator.VariableScope.RemoveAt(Evaluator.VariableScope.Count - 1);
+            }
+        }
         Evaluator.PrintResult = true;
         return toReturn;
     }

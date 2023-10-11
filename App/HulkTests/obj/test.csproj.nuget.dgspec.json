@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/vlady/Documents/codigo/HULKCompiler/App/test/test.csproj": {}
+    "/home/vlady/Documents/codigo/HULKCompiler/App/HulkTests/test.csproj": {}
   },
   "projects": {
-    "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj": {
+    "/home/vlady/Documents/codigo/HULKCompiler/App/HulkTests/test.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj",
-        "projectName": "lib",
-        "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj",
+        "projectUniqueName": "/home/vlady/Documents/codigo/HULKCompiler/App/HulkTests/test.csproj",
+        "projectName": "test",
+        "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/App/HulkTests/test.csproj",
         "packagesPath": "/home/vlady/.nuget/packages/",
-        "outputPath": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/obj/",
+        "outputPath": "/home/vlady/Documents/codigo/HULKCompiler/App/HulkTests/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/vlady/.nuget/NuGet/NuGet.Config"
@@ -25,7 +25,11 @@
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj": {
+                "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -79,14 +83,14 @@
         }
       }
     },
-    "/home/vlady/Documents/codigo/HULKCompiler/App/test/test.csproj": {
+    "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/vlady/Documents/codigo/HULKCompiler/App/test/test.csproj",
-        "projectName": "test",
-        "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/App/test/test.csproj",
+        "projectUniqueName": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj",
+        "projectName": "lib",
+        "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj",
         "packagesPath": "/home/vlady/.nuget/packages/",
-        "outputPath": "/home/vlady/Documents/codigo/HULKCompiler/App/test/obj/",
+        "outputPath": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/vlady/.nuget/NuGet/NuGet.Config"
@@ -100,11 +104,7 @@
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
-            "projectReferences": {
-              "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj": {
-                "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/App/lib/lib.csproj"
-              }
-            }
+            "projectReferences": {}
           }
         },
         "warningProperties": {

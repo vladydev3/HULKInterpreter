@@ -162,16 +162,85 @@ public sealed class LogExpression : Expression
 
 }
 
-public class RangeExpression : Expression
+public class NextFunction : Expression
 {
-    public override TokenType Type => TokenType.RangeExpression;
+    public override TokenType Type => TokenType.FunctionExpression;
+    public Token Name;
+
+    public NextFunction(Token name)
+    {
+        Name = name;
+    }
+
+    public override object EvaluateExpression()
+    {
+        try
+        {
+            return VectorExpression.GetVector(Name).GetNext();
+        }
+        catch (Exception e)
+        {
+            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+            return null;
+        }
+    }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        yield return Name;
+    }
+}
+
+public class CurrentFunction : Expression
+{
+    public override TokenType Type => TokenType.FunctionExpression;
+    public Token Name;
+
+    public CurrentFunction(Token name)
+    {
+        Name = name;
+    }
+
+    public override object EvaluateExpression()
+    {
+        try
+        {
+            return VectorExpression.GetVector(Name).GetCurrent(Name);
+        }
+        catch (Exception e)
+        {
+            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+            return null;
+        }
+    }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        yield return Name;
+    }
+}
+
+public class RangeFunction : Expression
+{
+    public override TokenType Type => TokenType.RangeFunction;
     public Expression LowerBound { get; }
     public Expression UpperBound { get; }
 
-    public RangeExpression(Expression lowerBound, Expression upperBound)
+    public RangeFunction(Expression lowerBound, Expression upperBound)
     {
         LowerBound = lowerBound;
         UpperBound = upperBound;
+    }
+
+    public List<Expression> GetVector()
+    {
+        List<Expression> vector = new();
+
+        for (int i = int.Parse(LowerBound.EvaluateExpression().ToString()); i < int.Parse(UpperBound.EvaluateExpression().ToString()); i++)
+        {
+            vector.Add(new NumberExpression(new Token(TokenType.Number, 0, "", i)));
+        }
+        return vector;
     }
 
     public override object EvaluateExpression()

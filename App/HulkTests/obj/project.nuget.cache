@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "y7O4iccI80Hmo4YAusPJN7hPkP5OdsLQn83aPnLSdC1T+ARRkB6ddQo90sLwX/Xtxc6Cld4v7YFiS3IWchXUow==",
+  "dgSpecHash": "6v9ABXSmY9jLfp3xKKlADjwietQEMW83Z8uE25B41Oup5GTp3vWWqbrvs4Td2KXL9vkov7Y4pp2lnpSZjt8WVw==",
   "success": true,
-  "projectFilePath": "/home/vlady/Documents/codigo/HULKCompiler/App/test/test.csproj",
+  "projectFilePath": "/home/vlady/Documents/codigo/HULKCompiler/App/HulkTests/test.csproj",
   "expectedPackageFiles": [
     "/home/vlady/.nuget/packages/coverlet.collector/3.2.0/coverlet.collector.3.2.0.nupkg.sha512",
     "/home/vlady/.nuget/packages/microsoft.codecoverage/17.5.0/microsoft.codecoverage.17.5.0.nupkg.sha512",

@@ -82,8 +82,9 @@ public sealed class VariableExpression : Expression
     {
         for (int i = Evaluator.VariableScope.Count - 1; i >= 0; i--)
         {
-            if (Evaluator.VariableScope[i].Item1 == VariableName.Text)
+            if (Evaluator.VariableScope[i].Item1 == VariableName.Text && Evaluator.VariableScope[i].Item3 >= Evaluator.VariablePointer)
             {
+                Evaluator.VariablePointer = Evaluator.VariableScope[i].Item3;  
                 return Evaluator.VariableScope[i].Item2.EvaluateExpression();
             }
         }
@@ -113,7 +114,7 @@ public class VectorExpression : Expression
         return GetElement(name, Current);
     }
 
-    public bool GetNext(Token name)
+    public bool GetNext()
     {
         return ++Current < Elements.Count;
     }

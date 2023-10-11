@@ -39,7 +39,7 @@ public enum TokenType
     // Expressions
     ForExpression,
     VectorExpression,
-    RangeExpression,
+    RangeFunction,
     FunctionExpression,
     WhileExpression,
     IfExpression,

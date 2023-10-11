@@ -1015,11 +1015,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/vlady/Documents/codigo/HULKCompiler/App/test/test.csproj",
+      "projectUniqueName": "/home/vlady/Documents/codigo/HULKCompiler/App/HulkTests/test.csproj",
       "projectName": "test",
-      "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/App/test/test.csproj",
+      "projectPath": "/home/vlady/Documents/codigo/HULKCompiler/App/HulkTests/test.csproj",
       "packagesPath": "/home/vlady/.nuget/packages/",
-      "outputPath": "/home/vlady/Documents/codigo/HULKCompiler/App/test/obj/",
+      "outputPath": "/home/vlady/Documents/codigo/HULKCompiler/App/HulkTests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/vlady/.nuget/NuGet/NuGet.Config"

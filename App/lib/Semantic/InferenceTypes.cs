@@ -23,14 +23,14 @@ public class InferenceTypes
     public static InferenceType GetInferenceType(Token token)
     {
         if (token.Type == TokenType.Boolean) return InferenceType.Bool;
-        if (token.Type == TokenType.Number || token.Type == TokenType.BiggerOrEqual || token.Type == TokenType.Bigger || token.Type == TokenType.Minor || token.Type == TokenType.MinorOrEqual) return InferenceType.Number;
+        if (token.Type == TokenType.Number || token.Type == TokenType.BiggerOrEqual || token.Type == TokenType.Bigger || token.Type == TokenType.LessThan || token.Type == TokenType.MinorOrEqual) return InferenceType.Number;
         if (token.Type == TokenType.String) return InferenceType.String;
         if (token.Type == TokenType.Plus || token.Type == TokenType.Minus || token.Type == TokenType.Mult || token.Type == TokenType.Div || token.Type == TokenType.Mod || token.Type == TokenType.Negation || token.Type == TokenType.Pow) return InferenceType.Number;
         if (token.Type == TokenType.Pow) return InferenceType.Number;
         if (token.Type == TokenType.And || token.Type == TokenType.Or || token.Type == TokenType.Diferent) return InferenceType.Bool;
         if (token.Type == TokenType.Identificator)
         {
-            foreach (Tuple<string, Expression, int> item in Evaluator.VariableScope)
+            foreach (var item in Evaluator.VariableScope)
             {
                 if (item.Item1 == token.Text)
                 {

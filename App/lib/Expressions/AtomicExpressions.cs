@@ -12,12 +12,12 @@ public sealed class StringExpression : Expression
 
     public override string EvaluateExpression()
     {
-        StringToken.Text = StringToken.Text.Substring(1, StringToken.Text.Length - 2);
-        StringToken.Text = StringToken.Text.Replace("\\t", "\t");
-        StringToken.Text = StringToken.Text.Replace("\\n", "\n");
-        StringToken.Text = StringToken.Text.Replace("\\", "");
+        StringToken.Value = StringToken.Value.ToString();
+        StringToken.Value = StringToken.Value.ToString().Replace("\\t", "\t");
+        StringToken.Value = StringToken.Value.ToString().Replace("\\n", "\n");
+        StringToken.Value = StringToken.Value.ToString().Replace("\\", "");
 
-        return StringToken.Text;
+        return StringToken.Value.ToString();
     }
 
     public override IEnumerable<Node> GetChildren()
@@ -68,23 +68,24 @@ public sealed class NumberExpression : Expression
     }
 }
 
-public sealed class VariableExpression : Expression
+public class VariableExpression : Expression
 {
     public override TokenType Type => TokenType.Identificator;
     public Token VariableName;
+    public int Scope;
 
-    public VariableExpression(Token variableName)
+    public VariableExpression(Token variableName, int scope)
     {
         VariableName = variableName;
+        Scope = scope;
     }
 
     public override object EvaluateExpression()
     {
         for (int i = Evaluator.VariableScope.Count - 1; i >= 0; i--)
         {
-            if (Evaluator.VariableScope[i].Item1 == VariableName.Text && Evaluator.VariableScope[i].Item3 >= Evaluator.VariablePointer)
+            if (Evaluator.VariableScope[i].Item1 == VariableName.Text && Evaluator.VariableScope[i].Item3 >= Scope)
             {
-                Evaluator.VariablePointer = Evaluator.VariableScope[i].Item3;  
                 return Evaluator.VariableScope[i].Item2.EvaluateExpression();
             }
         }

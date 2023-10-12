@@ -30,13 +30,11 @@ public sealed class ParenExpression : Expression
 public class PrintExpression : Expression
 {
     public override TokenType Type => TokenType.PrintExpression;
-    public Token PrintToken;
-    public ParenExpression ExpressionInside;
+    public Expression ExpressionInside;
 
-    public PrintExpression(Token printToken, Token openParen, Expression expression, Token closeParen)
+    public PrintExpression(Expression expression)
     {
-        PrintToken = printToken;
-        ExpressionInside = new ParenExpression(openParen, expression, closeParen);
+        ExpressionInside = expression;
     }
 
     public override object EvaluateExpression()
@@ -48,7 +46,8 @@ public class PrintExpression : Expression
         }
         catch (Exception e)
         {
-            return "";
+            Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+            return null;
         }
     }
 
@@ -62,12 +61,12 @@ public sealed class MathExpression : Expression
 {
     public override TokenType Type => TokenType.MathFunctions;
     public Token MathFunc { get; }
-    public ParenExpression ExpressionInside { get; }
+    public Expression ExpressionInside { get; }
 
-    public MathExpression(Token mathFunc, Token openParen, Expression expression, Token closeParen)
+    public MathExpression(Token mathFunc, Expression expression)
     {
         MathFunc = mathFunc;
-        ExpressionInside = new ParenExpression(openParen, expression, closeParen);
+        ExpressionInside = expression;
     }
 
     public override object EvaluateExpression()
@@ -81,7 +80,7 @@ public sealed class MathExpression : Expression
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.AddError($"Semantic Error: {e.Message}");
+                    Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
                 }
                 break;
 
@@ -92,17 +91,17 @@ public sealed class MathExpression : Expression
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.AddError($"Semantic Error: {e.Message}");
+                    Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
                 }
                 break;
             case "sqrt":
                 try
                 {
-                    return Math.Sqrt((double)Evaluator.Evaluate(ExpressionInside));
+                    return Math.Sqrt(double.Parse(Evaluator.Evaluate(ExpressionInside).ToString()));
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.AddError($"Semantic Error: {e.Message}");
+                    Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
                 }
                 break;
             case "exp":
@@ -112,7 +111,37 @@ public sealed class MathExpression : Expression
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.AddError($"Semantic Error: {e.Message}");
+                    Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+                }
+                break;
+            case "PI":
+                try
+                {
+                    return Math.PI;
+                }
+                catch (Exception e)
+                {
+                    Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+                }
+                break;
+            case "E":
+                try
+                {
+                    return Math.E;
+                }
+                catch (Exception e)
+                {
+                    Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+                }
+                break;
+            case "rand":
+                try
+                {
+                    return new Random().NextDouble();
+                }
+                catch (Exception e)
+                {
+                    Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
                 }
                 break;
         }
@@ -148,7 +177,7 @@ public sealed class LogExpression : Expression
         }
         catch (Exception e)
         {
-            Diagnostics.AddError($"Semantic Error: {e.Message}");
+            Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
         }
         return null;
     }
@@ -180,7 +209,7 @@ public class NextFunction : Expression
         }
         catch (Exception e)
         {
-            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+            Evaluator.Diagnostics.AddError($"! ! SEMANTIC ERROR: {e.Message}");
             return null;
         }
     }
@@ -209,7 +238,7 @@ public class CurrentFunction : Expression
         }
         catch (Exception e)
         {
-            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
+            Evaluator.Diagnostics.AddError($"! ! SEMANTIC ERROR: {e.Message}");
             return null;
         }
     }
@@ -258,7 +287,7 @@ public class RangeFunction : Expression
         }
         catch (Exception e)
         {
-            Diagnostics.AddError($"Semantic Error: {e.Message}");
+            Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
         }
         return null;
     }

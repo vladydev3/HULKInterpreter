@@ -12,17 +12,15 @@ public enum TokenType
     Pow,
     Concat,
     Negation,
+    UtilFunctions,
     MathFunctions,
-    Print,
-    Else,
-    Elif,
     Or,
     And,
     Comparation,
     BiggerOrEqual,
     MinorOrEqual,
     Bigger,
-    Minor,
+    LessThan,
     Diferent,
     Asignation,
     String,
@@ -55,7 +53,7 @@ public class Token : Node
     public override TokenType Type { get; }
     public int Position { get; }
     public string Text { get; set; }
-    public object Value { get; }
+    public object Value { get; set; }
 
     public Token(TokenType type, int position, string text, object value)
     {

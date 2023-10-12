@@ -26,7 +26,7 @@ public class FunctionCallExpression : Expression
         int count = 0;
         foreach (var item in Evaluator.FunctionsScope)
         {
-            List<Tuple<string, Expression,int>> temp = new();
+            List<Tuple<string, Expression, int>> temp = new();
             if (item.Item1 == Name.Text)
             {
                 if (item.Item2.Count != Arguments.Count)
@@ -50,7 +50,7 @@ public class FunctionCallExpression : Expression
                         return null;
                     }
 
-                    temp.Add(new Tuple<string, Expression,int>(item.Item2[i].Text, exp, ++Evaluator.VariablePointer));
+                    temp.Add(new Tuple<string, Expression, int>(item.Item2[i].Text, exp, Evaluator.VariableScope.Count));
                     count++;
                 }
                 Evaluator.VariableScope.AddRange(temp);

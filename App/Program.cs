@@ -11,6 +11,7 @@ while (true)
     Evaluator.VariableScope = new List<Tuple<string, Expression, int>>();
     Evaluator.PrintResult = false;
     Evaluator.StackPointer = 0;
+    Evaluator.ScopePointer = 0;
     Console.Write("> ");
     string code = Console.ReadLine();
     if (string.IsNullOrWhiteSpace(code)) return;

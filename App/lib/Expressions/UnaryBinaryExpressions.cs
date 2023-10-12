@@ -231,7 +231,7 @@ public sealed class BinaryExpression : Expression
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
-        else if (Operator.Type == TokenType.Minor)
+        else if (Operator.Type == TokenType.LessThan)
         {
             try
             {

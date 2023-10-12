@@ -31,7 +31,7 @@ static class SyntaxFacts
                 return 3;
             case TokenType.Bigger:
             case TokenType.BiggerOrEqual:
-            case TokenType.Minor:
+            case TokenType.LessThan:
             case TokenType.MinorOrEqual:
             case TokenType.Mod:
             case TokenType.Comparation:
@@ -53,7 +53,7 @@ class Parser
 
     public Parser(string text)
     {
-        Lexer lexer = new(text);
+        Lexer1 lexer = new(text);
 
         var tokens = lexer.Tokenize();
 
@@ -83,9 +83,17 @@ class Parser
 
         if (Type == TokenType.RParen) Diagnostics.AddError($"! SYNTAX ERROR: Missing closing parenthesis after '{tokens[position - 1].Text}'.");
         else if (Type == TokenType.EOL) Diagnostics.AddError($"! SYNTAX ERROR: ';' expected ");
-        else Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected <{Type}> type.");
+        else Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected '{Type}' type.");
 
         return new Token(Type, Current.Position, null, null);
+    }
+    private Token Match(string Type)
+    {
+        if (Current.Text == Type) return NextToken();
+
+        Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected '{Type}'.");
+
+        return new Token(TokenType.Error, Current.Position, null, null);
     }
 
     public SyntaxTree Parse()
@@ -153,26 +161,8 @@ class Parser
 
         if (Current.Type == TokenType.Number)
         {
-            if (Current.Text == "rand")
-            {
-                var random = Match(TokenType.Number);
-                Match(TokenType.LParen);
-                Match(TokenType.RParen);
-
-                return new NumberExpression(random);
-            }
             var numberToken = Match(TokenType.Number);
             return new NumberExpression(numberToken);
-        }
-
-        if (Current.Type == TokenType.Print)
-        {
-            var print = NextToken();
-            var lParen = Match(TokenType.LParen);
-            var expression = ParseExpression();
-            var rParen = Match(TokenType.RParen);
-
-            return new PrintExpression(print, lParen, expression, rParen);
         }
 
         if (Current.Type == TokenType.String)
@@ -187,22 +177,22 @@ class Parser
             if (Current.Text == "log")
             {
                 var logToken = NextToken();
-                var openParen = Match(TokenType.LParen);
+                Match(TokenType.LParen);
                 var bas = Match(TokenType.Number);
-                var comma = Match(TokenType.Comma);
+                Match(TokenType.Comma);
                 var number = Match(TokenType.Number);
-                var closeParen = Match(TokenType.RParen);
+                Match(TokenType.RParen);
 
                 return new LogExpression(logToken, bas, number);
             }
             if (Current.Text == "range")
             {
-                Match(TokenType.MathFunctions);
+                NextToken();
                 Match(TokenType.LParen);
                 var start = ParseExpression();
                 if (Current.Type == TokenType.Comma)
                 {
-                    Match(TokenType.Comma);
+                    NextToken();
                     var end = ParseExpression();
                     Match(TokenType.RParen);
                     return new VectorExpression(new RangeFunction(start, end).GetVector());
@@ -211,56 +201,74 @@ class Parser
                 return new VectorExpression(new RangeFunction(new NumberExpression(new Token(TokenType.Number, 0, "0", 0)), start).GetVector());
             }
             var trigToken = NextToken();
-            var lParen = Match(TokenType.LParen);
+            Match(TokenType.LParen);
             var expression = ParseExpression();
-            var rParen = Match(TokenType.RParen);
+            Match(TokenType.RParen);
 
-            return new MathExpression(trigToken, lParen, expression, rParen);
+            return new MathExpression(trigToken, expression);
         }
-
 
         if (Current.Type == TokenType.Keyword)
         {
+
+            if (Current.Text == "print")
+            {
+                NextToken();
+                Match(TokenType.LParen);
+                var expression = ParseExpression();
+                Match(TokenType.RParen);
+
+                return new PrintExpression(expression);
+            }
             if (Current.Text == "let")
             {
                 List<Token> variablesNames = new();
                 List<Expression> variablesExpressions = new();
-                Match(TokenType.Keyword);
+                NextToken();
                 variablesNames.Add(Match(TokenType.Identificator));
                 Match(TokenType.Asignation);
-
                 variablesExpressions.Add(ParseExpression());
-
                 if (variablesNames[0] == null) Diagnostics.AddError($"! SYNTAX ERROR: Missing expression in 'let-in' after variable '{variablesNames[0].Text}'");
-                Evaluator.VariableScope.Add(new Tuple<string, Expression, int>(variablesNames[0].Text, variablesExpressions[0], ++Evaluator.VariablePointer));
+                Evaluator.VariableScope.Add(new Tuple<string, Expression, int>(variablesNames[0].Text, variablesExpressions[0], ++Evaluator.ScopePointer));
                 if (Current.Type == TokenType.Comma)
                 {
-                    while (Current.Type == TokenType.Comma)
+                    do
                     {
-                        Match(TokenType.Comma);
+                        NextToken();
                         variablesNames.Add(Match(TokenType.Identificator));
                         Match(TokenType.Asignation); ;
                         variablesExpressions.Add(ParseExpression());
-                        Evaluator.VariableScope.Add(new Tuple<string, Expression,int>(variablesNames[variablesNames.Count - 1].Text, variablesExpressions[variablesExpressions.Count - 1], ++Evaluator.VariablePointer));
+                        Evaluator.VariableScope.Add(new Tuple<string, Expression, int>(variablesNames[variablesNames.Count - 1].Text, variablesExpressions[variablesExpressions.Count - 1], Evaluator.ScopePointer));
                     }
-                    Match(TokenType.Keyword);
+                    while (Current.Type == TokenType.Comma);
+                    var inToken = Match("in");
+                    if (inToken.Type == TokenType.Error)
+                    {
+                        Diagnostics.RemoveError();
+                        Diagnostics.AddError($"! SYNTAX ERROR: Missing 'in' after 'let' expression.");
+                    }
                     var inexpression = ParseExpression();
 
                     return new LetInExpression(variablesNames, variablesExpressions, inexpression);
                 }
                 else
                 {
-                    Match(TokenType.Keyword);
+                    var inToken = Match("in");
+                    if (inToken.Type == TokenType.Error)
+                    {
+                        Diagnostics.RemoveError();
+                        Diagnostics.AddError($"! SYNTAX ERROR: Missing 'in' after 'let' expression.");
+                    }
                     var inExpression = ParseExpression();
-                    return new LetInExpression(variablesNames, variablesExpressions, inExpression);
+                        return new LetInExpression(variablesNames, variablesExpressions, inExpression);
                 }
             }
             if (Current.Text == "for")
             {
-                Match(TokenType.Keyword);
+                NextToken();
                 Match(TokenType.LParen);
                 var identifier = Match(TokenType.Identificator);
-                Match(TokenType.Keyword);
+                Match("in");
                 if (Current.Type == TokenType.Identificator)
                 {
                     var name = Match(TokenType.Identificator);
@@ -271,7 +279,7 @@ class Parser
                 }
                 else
                 {
-                    Match(TokenType.MathFunctions);
+                    Match("range");
                     Match(TokenType.LParen);
                     var start = ParseExpression();
                     if (Current.Type == TokenType.Comma)
@@ -294,20 +302,20 @@ class Parser
             {
                 List<Expression> elifs = new();
                 List<Expression> elifcondition = new();
-                Match(TokenType.Keyword);
+                NextToken();
                 Match(TokenType.LParen);
                 var condition = ParseExpression();
                 Match(TokenType.RParen);
                 var ifexpression = ParseExpression();
-                while (Current.Type == TokenType.Elif)
+                while (Current.Text == "elif")
                 {
-                    Match(TokenType.Elif);
+                    NextToken();
                     Match(TokenType.LParen);
                     elifcondition.Add(ParseExpression());
                     Match(TokenType.RParen);
                     elifs.Add(ParseExpression());
                 }
-                Match(TokenType.Else);
+                Match("else");
                 var elseexpression = ParseExpression();
 
                 return new IfExpression(condition, ifexpression, elifcondition, elifs, elseexpression);
@@ -319,7 +327,7 @@ class Parser
             }
             if (Current.Text == "while")
             {
-                Match(TokenType.Keyword);
+                NextToken();
                 Match(TokenType.LParen);
                 var condition = ParseExpression();
                 Match(TokenType.RParen);
@@ -337,8 +345,8 @@ class Parser
             {
                 Match(TokenType.LParen);
                 List<Expression> arguments = new();
-                if (Current.Type != TokenType.RParen && Current.Type != TokenType.Error) arguments.Add(ParseExpression());
-                while (Current.Type != TokenType.RParen && Current.Type != TokenType.Error)
+                if (Current.Type != TokenType.RParen) arguments.Add(ParseExpression());
+                while (Current.Type != TokenType.RParen)
                 {
                     Match(TokenType.Comma);
                     arguments.Add(ParseExpression());
@@ -356,34 +364,34 @@ class Parser
                 return new NumberExpression(new Token(TokenType.Number, 0, VectorExpression.GetElement(name, int.Parse(Evaluator.Evaluate(index).ToString())).ToString(), VectorExpression.GetElement(name, int.Parse(Evaluator.Evaluate(index).ToString()))));
             }
 
-            if (Current.Text == ".current")
+            if (Current.Text == "current")
             {
-                Match(TokenType.MathFunctions);
+                NextToken();
                 Match(TokenType.LParen);
                 Match(TokenType.RParen);
 
                 return new CurrentFunction(name);
             }
 
-            if (Current.Text == ".next")
+            if (Current.Text == "next")
             {
-                Match(TokenType.MathFunctions);
+                NextToken();
                 Match(TokenType.LParen);
                 Match(TokenType.RParen);
 
                 return new NextFunction(name);
             }
 
-            if (Current.Text == ".size")
+            if (Current.Text == "size")
             {
-                Match(TokenType.MathFunctions);
+                NextToken();
                 Match(TokenType.LParen);
                 Match(TokenType.RParen);
 
                 return new NumberExpression(new Token(TokenType.Number, 0, VectorExpression.GetVector(name).Elements.Count.ToString(), VectorExpression.GetVector(name).Elements.Count));
             }
 
-            return new VariableExpression(name);
+            return new VariableExpression(name, Evaluator.ScopePointer);
         }
 
 
@@ -391,7 +399,7 @@ class Parser
     }
     private void ParseFunctionExpression()
     {
-        Match(TokenType.Keyword);
+        Match("function");
         var name = Match(TokenType.Identificator);
         Match(TokenType.LParen);
         List<Token> arguments = new();

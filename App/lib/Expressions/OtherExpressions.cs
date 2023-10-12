@@ -1,6 +1,6 @@
 namespace hulk;
 
-public sealed class ParenExpression : Expression
+public class ParenExpression : Expression
 {
     public override TokenType Type => TokenType.Parenthesis;
     public Token OpenParen { get; }
@@ -17,13 +17,6 @@ public sealed class ParenExpression : Expression
     public override object EvaluateExpression()
     {
         return Evaluator.Evaluate(Expression);
-    }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return OpenParen;
-        yield return Expression;
-        yield return CloseParen;
     }
 }
 
@@ -50,14 +43,9 @@ public class PrintExpression : Expression
             return null;
         }
     }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return ExpressionInside;
-    }
 }
 
-public sealed class MathExpression : Expression
+public class MathExpression : Expression
 {
     public override TokenType Type => TokenType.MathFunctions;
     public Token MathFunc { get; }
@@ -147,15 +135,9 @@ public sealed class MathExpression : Expression
         }
         return null;
     }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return MathFunc;
-        yield return ExpressionInside;
-    }
 }
 
-public sealed class LogExpression : Expression
+public class LogExpression : Expression
 {
     public override TokenType Type => TokenType.MathFunctions;
     public Token LogFunc { get; }
@@ -181,14 +163,6 @@ public sealed class LogExpression : Expression
         }
         return null;
     }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return LogFunc;
-        yield return Base;
-        yield return Number;
-    }
-
 }
 
 public class NextFunction : Expression
@@ -212,11 +186,6 @@ public class NextFunction : Expression
             Evaluator.Diagnostics.AddError($"! ! SEMANTIC ERROR: {e.Message}");
             return null;
         }
-    }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return Name;
     }
 }
 
@@ -243,10 +212,6 @@ public class CurrentFunction : Expression
         }
     }
 
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return Name;
-    }
 }
 
 public class RangeFunction : Expression
@@ -290,11 +255,5 @@ public class RangeFunction : Expression
             Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
         }
         return null;
-    }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return LowerBound;
-        yield return UpperBound;
     }
 }

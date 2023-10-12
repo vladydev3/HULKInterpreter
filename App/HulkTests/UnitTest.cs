@@ -19,6 +19,17 @@ public class BasicExpressions
     }
 
     [Test]
+    public void String2()
+    {
+        var code = "print(\"Hola\nSalto\t de linea\");";
+        var tree = SyntaxTree.Parse(code);
+
+        var result = Evaluator.Evaluate(tree.Root);
+
+        Assert.AreEqual("Hola\nSalto\t de linea", result);
+    }
+
+    [Test]
     public void ArithmeticExpressions()
     {
         string code = "print((((1 + 2) ^ 3) * 4) / 5);";
@@ -191,3 +202,8 @@ public class Conditionals
     }
 }
 
+// [TestFixture]
+// public class Scope
+// {
+//     public void 
+// }

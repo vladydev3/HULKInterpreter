@@ -1,12 +1,12 @@
 namespace hulk;
 
-public class Lexer1
+public class Lexer
 {
     private readonly string code;
     public Errors diagnostics = new();
     public int currentIndex = 0;
 
-    public Lexer1(string code)
+    public Lexer(string code)
     {
         this.code = code;
     }
@@ -35,6 +35,26 @@ public class Lexer1
                     diagnostics.AddError($"! LEXICAL ERROR: '{number + currentChar}' isn't a valid token (column {currentIndex})");
                 }
                 tokens.Add(new Token(TokenType.Number, currentIndex, number, double.Parse(number)));
+                continue;
+            }
+            else if (currentChar == '.')
+            {
+                currentChar = code[++currentIndex];
+                string funct = "";
+                while (char.IsLetter(currentChar))
+                {
+                    funct += currentChar;
+                    currentIndex++;
+                    if (currentIndex >= code.Length) break;
+                    currentChar = code[currentIndex];
+                }
+                if (funct == "next" || funct == "current" || funct == "size")
+                {
+                    tokens.Add(new Token(TokenType.UtilFunctions, currentIndex, funct, null));
+                    continue;
+                }
+                if (funct == "") diagnostics.AddError($"! LEXICAL ERROR: '{currentChar}' isn't a valid token (column {currentIndex})");
+                else diagnostics.AddError($"! LEXICAL ERROR: '{funct}' isn't a valid token (column {currentIndex})");
                 continue;
             }
             else if (char.IsLetter(currentChar) || currentChar == '_')
@@ -116,26 +136,7 @@ public class Lexer1
                 currentIndex++;
                 continue;
             }
-            else if (currentChar == '.')
-            {
-                currentIndex++;
-                string funct = "";
-                while (char.IsLetter(currentChar))
-                {
-                    funct += currentChar;
-                    currentIndex++;
-                    if (currentIndex >= code.Length) break;
-                    currentChar = code[currentIndex];
-                }
-                if (funct == "next" || funct == "current" || funct == "size")
-                {
-                    tokens.Add(new Token(TokenType.UtilFunctions, currentIndex, funct, null));
-                    continue;
-                }
-                if (funct == "") diagnostics.AddError($"! LEXICAL ERROR: '{currentChar}' isn't a valid token (column {currentIndex})");
-                else diagnostics.AddError($"! LEXICAL ERROR: '{funct}' isn't a valid token (column {currentIndex})");
-                continue;
-            }
+
             else if (currentChar == '+')
             {
                 tokens.Add(new Token(TokenType.Plus, currentIndex, "+", null));
@@ -174,46 +175,51 @@ public class Lexer1
             }
             else if (currentChar == '=')
             {
-                tokens.Add(new Token(TokenType.Asignation, currentIndex, "=", null));
                 currentIndex++;
                 if (code[currentIndex] == '=')
                 {
                     tokens.Add(new Token(TokenType.Comparation, currentIndex, "==", null));
                     currentIndex++;
                 }
+                else tokens.Add(new Token(TokenType.Asignation, currentIndex - 1, "=", null));
                 continue;
             }
             else if (currentChar == '!')
             {
-                tokens.Add(new Token(TokenType.Negation, currentIndex, "!", null));
                 currentIndex++;
+                if(currentIndex>=code.Length)
+                {
+                    tokens.Add(new Token(TokenType.Negation, currentIndex - 1, "!", null));
+                    continue;
+                }
                 if (code[currentIndex] == '=')
                 {
                     tokens.Add(new Token(TokenType.Diferent, currentIndex, "!=", null));
                     currentIndex++;
                 }
+                else tokens.Add(new Token(TokenType.Negation, currentIndex - 1, "!", null));
                 continue;
             }
             else if (currentChar == '<')
             {
-                tokens.Add(new Token(TokenType.LessThan, currentIndex, "<", null));
                 currentIndex++;
                 if (code[currentIndex] == '=')
                 {
-                    tokens.Add(new Token(TokenType.MinorOrEqual, currentIndex, "<=", null));
+                    tokens.Add(new Token(TokenType.LessOrEqual, currentIndex, "<=", null));
                     currentIndex++;
                 }
+                else tokens.Add(new Token(TokenType.Less, currentIndex - 1, "<", null));
                 continue;
             }
             else if (currentChar == '>')
             {
-                tokens.Add(new Token(TokenType.Bigger, currentIndex, ">", null));
-                currentIndex++;
                 if (code[currentIndex] == '=')
                 {
-                    tokens.Add(new Token(TokenType.BiggerOrEqual, currentIndex, ">=", null));
+                    tokens.Add(new Token(TokenType.GreaterOrEqual, currentIndex, ">=", null));
                     currentIndex++;
                 }
+                else tokens.Add(new Token(TokenType.Greater, currentIndex - 1, ">", null));
+                currentIndex++;
                 continue;
             }
             else if (currentChar == '&')
@@ -274,10 +280,23 @@ public class Lexer1
             {
                 string str = "";
                 currentIndex++;
-                while (code[currentIndex] != '"')
+                if (currentIndex >= code.Length)
                 {
-                    str += code[currentIndex];
-                    currentIndex++;
+                    diagnostics.AddError($"! LEXICAL ERROR: Unterminated String '{currentChar}' (column {currentIndex})");
+                    break;
+                }
+                try
+                {
+                    while (code[currentIndex] != '"')
+                    {
+                        str += code[currentIndex];
+                        currentIndex++;
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    if (currentIndex >= code.Length) diagnostics.AddError($"! LEXICAL ERROR: Unterminated String '{str}' (column {currentIndex})");
+                    else diagnostics.AddError($"! LEXICAL ERROR: {e} (column {currentIndex})");
                 }
                 tokens.Add(new Token(TokenType.String, currentIndex, str, str));
                 currentIndex++;
@@ -288,7 +307,7 @@ public class Lexer1
                 tokens.Add(new Token(TokenType.LBracket, currentIndex, "[", null));
                 currentIndex++;
                 continue;
-            }        
+            }
             else if (currentChar == ']')
             {
                 tokens.Add(new Token(TokenType.RBracket, currentIndex, "]", null));

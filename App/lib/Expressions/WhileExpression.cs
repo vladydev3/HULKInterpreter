@@ -22,9 +22,4 @@ public class WhileExpression : Expression
         }
         return returnWhile;
     }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        throw new NotImplementedException();
-    }
 }

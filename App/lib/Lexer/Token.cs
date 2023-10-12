@@ -17,10 +17,10 @@ public enum TokenType
     Or,
     And,
     Comparation,
-    BiggerOrEqual,
-    MinorOrEqual,
-    Bigger,
-    LessThan,
+    GreaterOrEqual,
+    LessOrEqual,
+    Greater,
+    Less,
     Diferent,
     Asignation,
     String,
@@ -61,10 +61,5 @@ public class Token : Node
         Position = position;
         Text = text;
         Value = value;
-    }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        return Enumerable.Empty<Node>();
     }
 }

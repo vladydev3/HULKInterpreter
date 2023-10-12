@@ -42,19 +42,4 @@ public class IfExpression : Expression
         }
         return null;
     }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return Condition;
-        yield return ifExpression;
-        foreach (var elif in ElifCondition)
-        {
-            yield return elif;
-        }
-        foreach (var elif in ElifExpression)
-        {
-            yield return elif;
-        }
-        yield return ElseExpression;
-    }
 }

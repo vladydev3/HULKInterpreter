@@ -42,11 +42,6 @@ public sealed class UnaryExpression : Expression
         return operand;
     }
 
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return OperatorToken;
-        yield return Operand;
-    }
 }
 
 public sealed class BinaryExpression : Expression
@@ -220,7 +215,7 @@ public sealed class BinaryExpression : Expression
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
-        else if (Operator.Type == TokenType.Bigger)
+        else if (Operator.Type == TokenType.Greater)
         {
             try
             {
@@ -231,7 +226,7 @@ public sealed class BinaryExpression : Expression
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
-        else if (Operator.Type == TokenType.LessThan)
+        else if (Operator.Type == TokenType.Less)
         {
             try
             {
@@ -242,7 +237,7 @@ public sealed class BinaryExpression : Expression
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
-        else if (Operator.Type == TokenType.BiggerOrEqual)
+        else if (Operator.Type == TokenType.GreaterOrEqual)
         {
             try
             {
@@ -253,7 +248,7 @@ public sealed class BinaryExpression : Expression
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             }
         }
-        else if (Operator.Type == TokenType.MinorOrEqual)
+        else if (Operator.Type == TokenType.LessOrEqual)
         {
             try
             {
@@ -288,12 +283,5 @@ public sealed class BinaryExpression : Expression
         }
 
         return null;
-    }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return Left;
-        yield return Operator;
-        yield return Right;
     }
 }

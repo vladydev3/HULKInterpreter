@@ -1,6 +1,6 @@
 namespace hulk;
 
-public sealed class StringExpression : Expression
+public class StringExpression : Expression
 {
     public override TokenType Type => TokenType.String;
     public Token StringToken;
@@ -19,14 +19,9 @@ public sealed class StringExpression : Expression
 
         return StringToken.Value.ToString();
     }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return StringToken;
-    }
 }
 
-public sealed class BooleanExpression : Expression
+public class BooleanExpression : Expression
 {
     public override TokenType Type => TokenType.Boolean;
     public Token Bool { get; }
@@ -40,14 +35,9 @@ public sealed class BooleanExpression : Expression
     {
         return Bool.Value;
     }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return Bool;
-    }
 }
 
-public sealed class NumberExpression : Expression
+public class NumberExpression : Expression
 {
     public override TokenType Type => TokenType.Number;
     public Token NumberToken { get; }
@@ -60,11 +50,6 @@ public sealed class NumberExpression : Expression
     public override object EvaluateExpression()
     {
         return NumberToken.Value;
-    }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return NumberToken;
     }
 }
 
@@ -92,11 +77,6 @@ public class VariableExpression : Expression
         Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{VariableName.Text}\" is not defined");
         return null;
     }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return VariableName;
-    }
 }
 
 public class VectorExpression : Expression
@@ -112,12 +92,13 @@ public class VectorExpression : Expression
 
     public object GetCurrent(Token name)
     {
-        return GetElement(name, Current);
+        return GetElement(name, Current++);
     }
 
     public bool GetNext()
     {
-        return ++Current < Elements.Count;
+        return Current < Elements.Count;
+
     }
 
     public static VectorExpression GetVector(Token name)
@@ -168,13 +149,5 @@ public class VectorExpression : Expression
             vector.Add(Evaluator.Evaluate(element));
         }
         return vector;
-    }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        foreach (var element in Elements)
-        {
-            yield return element;
-        }
     }
 }

@@ -18,18 +18,5 @@ public sealed class LetInExpression : Expression
     {
         return Evaluator.Evaluate(InExpression);
     }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        foreach (var item in VariablesNames)
-        {
-            yield return item;
-        }
-        foreach (var item in Values)
-        {
-            yield return item;
-        }
-        yield return InExpression;
-    }
 }
 

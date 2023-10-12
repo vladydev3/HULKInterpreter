@@ -16,12 +16,13 @@ public class FunctionCallExpression : Expression
 
     public override object EvaluateExpression()
     {
-        if (Evaluator.StackPointer >= 1000)
+
+        if (Evaluator.VariableScope.Count > 1000)
         {
             Evaluator.Diagnostics.AddError("! Stack Overflow.");
             return null;
         }
-        Evaluator.StackPointer++;
+
         object toReturn = null;
         int count = 0;
         foreach (var item in Evaluator.FunctionsScope)
@@ -31,7 +32,7 @@ public class FunctionCallExpression : Expression
             {
                 if (item.Item2.Count != Arguments.Count)
                 {
-                    Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" receives {item.Item2.Count} arguments, but {Arguments.Count} were given.");
+                    Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Function \"{Name.Text}\" receives {item.Item2.Count} argument(s), but {Arguments.Count} were given (column {Name.Position + 2}).");
                     return null;
                 }
 
@@ -46,7 +47,7 @@ public class FunctionCallExpression : Expression
 
                     if (func != arg && func != InferenceType.Any)
                     {
-                        Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" receives {InferenceTypes.GetInferenceType(item.Item3)} argument, but {InferenceTypes.GetInferenceType(argument)} was given.");
+                        Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Function \"{Name.Text}\" receives {InferenceTypes.GetInferenceType(item.Item3)} argument, but {InferenceTypes.GetInferenceType(argument)} was given (column {Name.Position + 1}).");
                         return null;
                     }
 
@@ -59,7 +60,7 @@ public class FunctionCallExpression : Expression
         }
         if (toReturn == null)
         {
-            Evaluator.Diagnostics.AddError($"Semantic Error: Function \"{Name.Text}\" is not defined.");
+            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Function \"{Name.Text}\" is not defined (column {Name.Position}).");
             return null;
         }
         if (count > 0)
@@ -70,11 +71,7 @@ public class FunctionCallExpression : Expression
             }
         }
         Evaluator.PrintResult = true;
+        
         return toReturn;
-    }
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        throw new NotImplementedException();
     }
 }

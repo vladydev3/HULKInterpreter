@@ -71,11 +71,4 @@ public class ForExpression : Expression
         }
         return null;
     }
-
-
-    public override IEnumerable<Node> GetChildren()
-    {
-        yield return Identifier;
-        yield return Body;
-    }
 }

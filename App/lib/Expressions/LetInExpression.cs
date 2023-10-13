@@ -14,7 +14,7 @@ public sealed class LetInExpression : Expression
         InExpression = inExpression;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         return Evaluator.Evaluate(InExpression);
     }

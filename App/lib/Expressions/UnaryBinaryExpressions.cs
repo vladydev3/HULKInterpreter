@@ -12,10 +12,11 @@ public class UnaryExpression : Expression
         Operand = operand;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         var operand = Evaluator.Evaluate(Operand);
 
+        if (operand == null) return null;
         if (OperatorToken.Type == TokenType.Negation)
         {
             try
@@ -58,10 +59,12 @@ public class BinaryExpression : Expression
         Right = right;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
-        object left = Evaluator.Evaluate(Left);
-        object right = Evaluator.Evaluate(Right);
+        object? left = Evaluator.Evaluate(Left);
+        object? right = Evaluator.Evaluate(Right);
+
+        if (left == null || right == null) return null;
 
         if (Operator.Type == TokenType.Plus)
         {
@@ -71,8 +74,8 @@ public class BinaryExpression : Expression
             }
             catch (Exception)
             {
-                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' only can be used between two numbers");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' only can be used between two numbers");
+                return null;
             }
         }
         else if (Operator.Type == TokenType.Minus)
@@ -83,8 +86,7 @@ public class BinaryExpression : Expression
             }
             catch (Exception)
             {
-                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' only can be used between two numbers");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' only can be used between two numbers");
             }
         }
         else if (Operator.Type == TokenType.Mult)
@@ -93,10 +95,9 @@ public class BinaryExpression : Expression
             {
                 return (double)left * (double)right;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' only can be used between two numbers");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' only can be used between two numbers");
             }
         }
         else if (Operator.Type == TokenType.Div)
@@ -105,10 +106,9 @@ public class BinaryExpression : Expression
             {
                 return (double)left / (double)right;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' only can be used between two numbers");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' only can be used between two numbers");
             }
         }
         else if (Operator.Type == TokenType.Mod)
@@ -119,8 +119,7 @@ public class BinaryExpression : Expression
             }
             catch (Exception)
             {
-                if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' only can be used between two numbers");
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' only can be used between two numbers");
             }
         }
         else if (Operator.Type == TokenType.Concat)

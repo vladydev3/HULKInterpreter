@@ -14,7 +14,7 @@ public class ParenExpression : Expression
         CloseParen = closeParen;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         return Evaluator.Evaluate(Expression);
     }
@@ -30,7 +30,7 @@ public class PrintExpression : Expression
         ExpressionInside = expression;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         try
         {
@@ -56,14 +56,14 @@ public class MathExpression : Expression
         ExpressionInside = expression;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         switch (MathFunc.Text)
         {
             case "sin":
                 try
                 {
-                    return Math.Sin((double)Evaluator.Evaluate(ExpressionInside));
+                    return Math.Sin(Convert.ToDouble(Evaluator.Evaluate(ExpressionInside)));
                 }
                 catch (Exception e)
                 {
@@ -74,7 +74,7 @@ public class MathExpression : Expression
             case "cos":
                 try
                 {
-                    return Math.Cos((double)Evaluator.Evaluate(ExpressionInside));
+                    return Math.Cos(Convert.ToDouble(Evaluator.Evaluate(ExpressionInside)));
                 }
                 catch (Exception e)
                 {
@@ -84,7 +84,7 @@ public class MathExpression : Expression
             case "sqrt":
                 try
                 {
-                    return Math.Sqrt(double.Parse(Evaluator.Evaluate(ExpressionInside).ToString()));
+                    return Math.Sqrt(Convert.ToDouble(Evaluator.Evaluate(ExpressionInside)));
                 }
                 catch (Exception e)
                 {
@@ -94,7 +94,7 @@ public class MathExpression : Expression
             case "exp":
                 try
                 {
-                    return Math.Pow(Math.E, (double)Evaluator.Evaluate(ExpressionInside));
+                    return Math.Pow(Math.E, Convert.ToDouble(Evaluator.Evaluate(ExpressionInside)));
                 }
                 catch (Exception e)
                 {
@@ -148,11 +148,23 @@ public class LogExpression : Expression
         Number = number;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         try
         {
-            return Math.Log((double)Number.EvaluateExpression(), (double)Base.EvaluateExpression());
+            double? a = Convert.ToDouble(Number.EvaluateExpression());
+            double? newBase = Convert.ToDouble(Base.EvaluateExpression());
+            if (newBase == 1)
+            {
+                Diagnostics.AddError($"! SEMANTIC ERROR: Logarithm base cannot be 1");
+                return null;
+            }
+            if (a == 0)
+            {
+                Diagnostics.AddError($"! SEMANTIC ERROR: Logarithm of 0 is undefined");
+                return null;
+            }
+            if (a != null && newBase != null) return Math.Log(a.Value, newBase.Value);
         }
         catch (Exception e)
         {
@@ -172,15 +184,17 @@ public class NextFunction : Expression
         Name = name;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         try
         {
-            return VectorExpression.GetVector(Name).GetNext();
+            var next = VectorExpression.GetVector(Name);
+            if (next != null) return next.GetNext();
+            return null;
         }
         catch (Exception e)
         {
-            Evaluator.Diagnostics.AddError($"! ! SEMANTIC ERROR: {e.Message}");
+            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
             return null;
         }
     }
@@ -196,11 +210,13 @@ public class CurrentFunction : Expression
         Name = name;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         try
         {
-            return VectorExpression.GetVector(Name).GetCurrent(Name);
+            var vector = VectorExpression.GetVector(Name);
+            if (vector != null) return vector.GetCurrent(Name);
+            return null;
         }
         catch (Exception e)
         {
@@ -227,19 +243,23 @@ public class RangeFunction : Expression
     {
         List<Expression> vector = new();
 
-        for (int i = int.Parse(LowerBound.EvaluateExpression().ToString()); i < int.Parse(UpperBound.EvaluateExpression().ToString()); i++)
+        var lower = LowerBound.EvaluateExpression();
+        var upper = UpperBound.EvaluateExpression();
+
+        if (upper == null || lower == null) return vector;
+        for (int i = Convert.ToInt32(lower); i < Convert.ToInt32(upper); i++)
         {
             vector.Add(new NumberExpression(new Token(TokenType.Number, 0, "", i)));
         }
         return vector;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         try
         {
-            var lower = (double)Evaluator.Evaluate(LowerBound);
-            var upper = (double)Evaluator.Evaluate(UpperBound);
+            var lower = Convert.ToDouble(Evaluator.Evaluate(LowerBound));
+            var upper = Convert.ToDouble(Evaluator.Evaluate(UpperBound));
             var range = new List<double>((int)(upper - lower));
             for (var i = lower; i < upper; i++)
             {

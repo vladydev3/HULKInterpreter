@@ -16,9 +16,13 @@ public class WhileExpression : Expression
     public override object EvaluateExpression()
     {
         string returnWhile = "";
-        while ((bool)Evaluator.Evaluate(condition))
+        while (Evaluator.Evaluate(condition) is bool conditionValue && conditionValue)
         {
-            returnWhile += Evaluator.Evaluate(body).ToString() + "\n";
+            var evaluatedBody = Evaluator.Evaluate(body);
+            if (evaluatedBody != null)
+            {
+                returnWhile += evaluatedBody.ToString() + "\n";
+            }
         }
         return returnWhile;
     }

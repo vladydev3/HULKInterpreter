@@ -14,7 +14,7 @@ public class FunctionCallExpression : Expression
         Arguments = arguments;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
 
         if (Evaluator.VariableScope.Count > 1000)
@@ -23,7 +23,7 @@ public class FunctionCallExpression : Expression
             return null;
         }
 
-        object toReturn = null;
+        object? toReturn = null;
         int count = 0;
         foreach (var item in Evaluator.FunctionsScope)
         {
@@ -39,8 +39,18 @@ public class FunctionCallExpression : Expression
                 for (int i = 0; i < Arguments.Count; i++)
                 {
                     var argument = Arguments[i].EvaluateExpression();
+                    if (argument == null)
+                    {
+                        Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Missing argument (column {Name.Position + 2}).");
+                        return null;
+                    }
                     var a = new Parser(argument.ToString());
                     var exp = a.ParseExpression();
+                    if (exp == null)
+                    {
+                        Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Missing argument (column {Name.Position + 2}).");
+                        return null;
+                    }
 
                     var func = InferenceTypes.GetInferenceType(item.Item3);
                     var arg = InferenceTypes.GetInferenceType(argument);

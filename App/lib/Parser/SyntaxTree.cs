@@ -9,7 +9,7 @@ public class SyntaxTree
         Diagnostics = diagnostics;
     }
     public Errors Diagnostics;
-    public Expression? Root { get; }
+    public Expression Root { get; }
     public Token EndOfFileToken { get; }
 
     public static SyntaxTree Parse(string text)

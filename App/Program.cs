@@ -12,7 +12,7 @@ while (true)
     Evaluator.Diagnostics = new Errors();
     Evaluator.ScopePointer = 0;
     Console.Write("> ");
-    string code = Console.ReadLine();
+    string? code = Console.ReadLine();
     if (string.IsNullOrWhiteSpace(code)) return;
 
     else if (code == "#clear")
@@ -25,6 +25,7 @@ while (true)
 
     var syntaxTree = SyntaxTree.Parse(code);
 
+    if (syntaxTree == null) continue;
     if (syntaxTree.Diagnostics.AnyError())
     {
         watch.Stop();
@@ -37,7 +38,6 @@ while (true)
     }
     else
     {
-        if (syntaxTree.Root == null) continue;
         var result = Evaluator.Evaluate(syntaxTree.Root);
 
         watch.Stop();

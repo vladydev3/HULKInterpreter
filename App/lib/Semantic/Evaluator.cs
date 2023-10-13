@@ -8,7 +8,7 @@ public class Evaluator
     public static (bool,string) FunctionBody = (true,"");
     public static int ScopePointer = 0;
 
-    static public object Evaluate(Expression node)
+    static public object? Evaluate(Expression node)
     {
         var result = node.EvaluateExpression();
 

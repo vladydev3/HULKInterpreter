@@ -46,7 +46,12 @@ public class InferenceTypes
     {
         if (expression is StringExpression stringExpression) return GetInferenceType(stringExpression.StringToken);
         if (expression is BooleanExpression booleanExpression) return GetInferenceType(booleanExpression.Bool);
-        if (expression is NumberExpression numberExpression) return GetInferenceType(numberExpression.NumberToken);
+        if (expression is NumberExpression numberExpression)
+        {
+            var numToken = numberExpression.NumberToken;
+            if (numToken == null) return InferenceType.Any;
+            return GetInferenceType(numToken);
+        }
         if (expression is VariableExpression variableExpression) return GetInferenceType(variableExpression.VariableName);
         if (expression is UnaryExpression unaryExpression)
         {

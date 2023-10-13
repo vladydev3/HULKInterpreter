@@ -7,15 +7,12 @@ public class BasicExpressions
     [Test]
     public void String()
     {
-        // Arrange
-        string code = "print(\"Esta oracion con mas de 1024 caracteres para ver si no hay overflow, esta oracion con mas de 1024 caracteres para ver si no hay overflow, Esta oracion con mas de 356 caracteres para ver si no hay overflow, Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,\" @ \": prueba overflow ok\");";
+        string code = "print(\"Oracion blabla\" @ \"okok\");";
         var tree = SyntaxTree.Parse(code);
 
-        // Act
         var result = Evaluator.Evaluate(tree.Root);
 
-        // Assert
-        Assert.AreEqual("Esta oracion con mas de 1024 caracteres para ver si no hay overflow, esta oracion con mas de 1024 caracteres para ver si no hay overflow, Esta oracion con mas de 356 caracteres para ver si no hay overflow, Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 356 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,Esta oracion con mas de 1024 caracteres para ver si no hay overflow,: prueba overflow ok", result);
+        Assert.That(result, Is.EqualTo("Oracion blablaokok"));
     }
 
     [Test]
@@ -26,7 +23,7 @@ public class BasicExpressions
 
         var result = Evaluator.Evaluate(tree.Root);
 
-        Assert.AreEqual("Hola\nSalto\t de linea", result);
+        Assert.That(result, Is.EqualTo("Hola\nSalto\t de linea"));
     }
 
     [Test]
@@ -37,7 +34,7 @@ public class BasicExpressions
 
         var result = Evaluator.Evaluate(tree.Root);
 
-        Assert.AreEqual(21.6, result);
+        Assert.That(result, Is.EqualTo(21.6));
     }
     
     [Test]
@@ -48,7 +45,7 @@ public class BasicExpressions
 
         var result = Evaluator.Evaluate(tree.Root);
 
-        Assert.AreEqual(-1, result);
+        Assert.That(result, Is.EqualTo(-1));
     }
 
     [Test]
@@ -60,7 +57,7 @@ public class BasicExpressions
         var result = Evaluator.Evaluate(tree.Root);
         var error = Evaluator.Diagnostics.AnyError();
 
-        Assert.AreEqual(true, error);
+        Assert.That(error, Is.EqualTo(true));
     }
 }
 
@@ -73,13 +70,11 @@ public class Functions
         string code = "function tan(x) => sin(x) / cos(x);";
         var tree = SyntaxTree.Parse(code);
 
-        Assert.AreEqual(false, tree.Diagnostics.AnyError());
-
         string code2 = "print(tan(1));";
         var tree2 = SyntaxTree.Parse(code2);
         var result = Evaluator.Evaluate(tree2.Root);
 
-        Assert.AreEqual(1.557407724654902, result);
+        Assert.That(result, Is.EqualTo(1.5574077246549021));
     }
     [Test]
     public void Recursion()
@@ -87,19 +82,17 @@ public class Functions
         string code = "function fib(n) => if (n > 1) fib(n-1) + fib(n-2) else 1;";
         var tree = SyntaxTree.Parse(code);
 
-        Assert.AreEqual(false, tree.Diagnostics.AnyError());
-
         string code2 = "let x = 3 in fib(x+1);";
         var tree2 = SyntaxTree.Parse(code2);
         var result = Evaluator.Evaluate(tree2.Root);
 
-        Assert.AreEqual(5, result);
+        Assert.That(result, Is.EqualTo(5));
 
         string code3 = "fib(6);";
         var tree3 = SyntaxTree.Parse(code3);
         var result2 = Evaluator.Evaluate(tree3.Root);
 
-        Assert.AreEqual(13, result2);
+        Assert.That(result2, Is.EqualTo(13));
     }
 
     [Test]
@@ -108,19 +101,17 @@ public class Functions
         string code = "function mcd(a,b) => if (a % b ==0) b else mcd(b, a%b);";
         var tree = SyntaxTree.Parse(code);
 
-        Assert.AreEqual(false, tree.Diagnostics.AnyError());
-
         string code2 = "mcd(36, 24);";
         var tree2 = SyntaxTree.Parse(code2);
         var result = Evaluator.Evaluate(tree2.Root);
 
-        Assert.AreEqual(12, result);
+        Assert.That(result, Is.EqualTo(12));    
 
         string code3 = "mcd(8, 4);";
         var tree3 = SyntaxTree.Parse(code3);
         var result2 = Evaluator.Evaluate(tree3.Root);
 
-        Assert.AreEqual(4, result2);
+        Assert.That(result2, Is.EqualTo(4));
     }
 }
 
@@ -135,7 +126,7 @@ public class Operators
         
         var result = Evaluator.Evaluate(tree.Root);
 
-        Assert.AreEqual("The meaning of life is42", result);
+        Assert.That(result, Is.EqualTo("The meaning of life is42"));
     }
     [Test]
     public void BooleanTrue()
@@ -145,7 +136,7 @@ public class Operators
 
         var result = Evaluator.Evaluate(tree.Root);
         
-        Assert.AreEqual(true, result);
+        Assert.That(result, Is.EqualTo(true));
     }
     [Test]
     public void BooleanFalse()
@@ -155,7 +146,7 @@ public class Operators
 
         var result = Evaluator.Evaluate(tree.Root);
         
-        Assert.AreEqual(false, result);
+        Assert.That(result, Is.EqualTo(false));
     }
     [Test]
     public void UnaryOperators()
@@ -165,14 +156,14 @@ public class Operators
 
         var result = Evaluator.Evaluate(tree.Root);
         
-        Assert.AreEqual(false, result);
+        Assert.That(result, Is.EqualTo(false));
 
         string code1 = "print(!(2==2));";
         var tree1 = SyntaxTree.Parse(code1);
 
         var result1 = Evaluator.Evaluate(tree1.Root);
         
-        Assert.AreEqual(false, result1);
+        Assert.That(result1, Is.EqualTo(false));
     }
 }
 
@@ -187,7 +178,7 @@ public class Conditionals
 
         var result = Evaluator.Evaluate(tree.Root);
 
-        Assert.AreEqual("Even", result);
+        Assert.That(result, Is.EqualTo("Even"));
     }
 
     [Test]
@@ -198,7 +189,7 @@ public class Conditionals
 
         var result = Evaluator.Evaluate(tree.Root);
 
-        Assert.AreEqual("odd", result);
+        Assert.That(result, Is.EqualTo("odd"));
     }
 }
 

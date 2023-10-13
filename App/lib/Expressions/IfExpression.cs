@@ -23,20 +23,20 @@ public class IfExpression : Expression
     {
         try
         {
-            if ((bool)Evaluator.Evaluate(Condition))
+            if (Convert.ToBoolean(Evaluator.Evaluate(Condition)))
             {
                 return Evaluator.Evaluate(ifExpression);
             }
             for (int i = 0; i < ElifCondition.Count; i++)
             {
-                if ((bool)Evaluator.Evaluate(ElifCondition[i]))
+                if (Convert.ToBoolean(Evaluator.Evaluate(ElifCondition[i])))
                 {
                     return Evaluator.Evaluate(ElifExpression[i]);
                 }
             }
             return Evaluator.Evaluate(ElseExpression);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Evaluator.Diagnostics.AddError("! SEMANTIC ERROR: Can't convert the given condition to bool.");
         }

@@ -38,15 +38,16 @@ public class BooleanExpression : Expression
 public class NumberExpression : Expression
 {
     public override TokenType Type => TokenType.Number;
-    public Token NumberToken { get; }
+    public Token? NumberToken { get; }
 
-    public NumberExpression(Token numberToken)
+    public NumberExpression(Token? numberToken)
     {
         NumberToken = numberToken;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
+        if (NumberToken == null) return null;
         return NumberToken.Value;
     }
 }
@@ -63,7 +64,7 @@ public class VariableExpression : Expression
         Scope = scope;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         for (int i = Evaluator.VariableScope.Count - 1; i >= 0; i--)
         {
@@ -100,7 +101,7 @@ public class VectorExpression : Expression
         Elements = elements;
     }
 
-    public object GetCurrent(Token name)
+    public object? GetCurrent(Token name)
     {
         return GetElement(name, Current++);
     }
@@ -111,7 +112,7 @@ public class VectorExpression : Expression
 
     }
 
-    public static VectorExpression GetVector(Token name)
+    public static VectorExpression? GetVector(Token name)
     {
         try
         {
@@ -131,7 +132,7 @@ public class VectorExpression : Expression
         return null;
     }
 
-    public static object GetElement(Token name, int index)
+    public static object? GetElement(Token name, int index)
     {
         try
         {
@@ -139,7 +140,15 @@ public class VectorExpression : Expression
             {
                 if (Evaluator.VariableScope[i].Item1 == name.Text)
                 {
-                    return ((List<object>)Evaluator.VariableScope[i].Item2.EvaluateExpression())[index];
+                    var vector = (List<object>)Evaluator.VariableScope[i].Item2.EvaluateExpression();
+                    if (vector != null && index < vector.Count && index >= 0)
+                    {
+                        return vector[index];
+                    }
+                    else
+                    {
+                        Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Index out of range for variable \"{name.Text}\"");
+                    }
                 }
             }
             Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Variable \"{name.Text}\" is not defined");

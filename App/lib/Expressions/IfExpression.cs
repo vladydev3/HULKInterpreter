@@ -19,7 +19,7 @@ public class IfExpression : Expression
         ElseExpression = elseExpression;
     }
 
-    public override object EvaluateExpression()
+    public override object? EvaluateExpression()
     {
         try
         {
@@ -38,7 +38,7 @@ public class IfExpression : Expression
         }
         catch (Exception e)
         {
-            Diagnostics.AddError("Can't convert the given condition to bool");
+            Evaluator.Diagnostics.AddError("! SEMANTIC ERROR: Can't convert the given condition to bool.");
         }
         return null;
     }

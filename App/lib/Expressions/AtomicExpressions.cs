@@ -10,13 +10,11 @@ public class StringExpression : Expression
         StringToken = stringToken;
     }
 
-    public override string EvaluateExpression()
+    public override string? EvaluateExpression()
     {
-        StringToken.Value = StringToken.Value.ToString();
         StringToken.Value = StringToken.Value.ToString().Replace("\\t", "\t");
         StringToken.Value = StringToken.Value.ToString().Replace("\\n", "\n");
         StringToken.Value = StringToken.Value.ToString().Replace("\\", "");
-
         return StringToken.Value.ToString();
     }
 }
@@ -74,8 +72,20 @@ public class VariableExpression : Expression
                 return Evaluator.VariableScope[i].Item2.EvaluateExpression();
             }
         }
-        Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{VariableName.Text}\" is not defined");
-        return null;
+        if (Evaluator.FunctionsScope.Count > 0)
+        {
+            foreach (var argument in Evaluator.FunctionsScope[Evaluator.FunctionsScope.Count - 1].Item2)
+            {
+                if (argument.Text == VariableName.Text)
+                {
+                    return "";
+                }
+            }
+            Evaluator.FunctionBody = (false, $"! SEMANTIC ERROR: Variable \"{VariableName.Text}\" is not defined");
+        }
+
+        Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Variable \"{VariableName.Text}\" is not defined");
+        return "";
     }
 }
 
@@ -112,11 +122,11 @@ public class VectorExpression : Expression
                     return (VectorExpression)Evaluator.VariableScope[i].Item2;
                 }
             }
-            Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{name.Text}\" is not defined");
+            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Variable \"{name.Text}\" is not defined");
         }
         catch (Exception)
         {
-            Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{name.Text}\" is not a vector");
+            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Variable \"{name.Text}\" is not a vector");
         }
         return null;
     }
@@ -132,11 +142,11 @@ public class VectorExpression : Expression
                     return ((List<object>)Evaluator.VariableScope[i].Item2.EvaluateExpression())[index];
                 }
             }
-            Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{name.Text}\" is not defined");
+            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Variable \"{name.Text}\" is not defined");
         }
         catch (Exception)
         {
-            Evaluator.Diagnostics.AddError($"Semantic Error: Variable \"{name.Text}\" is not a vector");
+            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Variable \"{name.Text}\" is not a vector");
         }
         return null;
     }

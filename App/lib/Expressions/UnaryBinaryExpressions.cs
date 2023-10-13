@@ -1,6 +1,6 @@
 namespace hulk;
 
-public sealed class UnaryExpression : Expression
+public class UnaryExpression : Expression
 {
 
     public override TokenType Type => TokenType.UnaryExpression;
@@ -44,7 +44,7 @@ public sealed class UnaryExpression : Expression
 
 }
 
-public sealed class BinaryExpression : Expression
+public class BinaryExpression : Expression
 {
     public override TokenType Type => TokenType.BinaryExpression;
     public Expression Left { get; }
@@ -72,9 +72,7 @@ public sealed class BinaryExpression : Expression
             catch (Exception)
             {
                 if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else if (right == null && left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between 'null' and 'null'.");
-                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between '{left.GetType()}' and 'null'.");
-                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' cannot be used between 'null' and '{right.GetType()}'.");
+                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '+' only can be used between two numbers");
             }
         }
         else if (Operator.Type == TokenType.Minus)
@@ -83,11 +81,10 @@ public sealed class BinaryExpression : Expression
             {
                 return (double)left - (double)right;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' cannot be used between '{left.GetType()}' and 'null'.");
-                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' cannot be used between 'null' and '{right.GetType()}'.");
+                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '-' only can be used between two numbers");
             }
         }
         else if (Operator.Type == TokenType.Mult)
@@ -99,8 +96,7 @@ public sealed class BinaryExpression : Expression
             catch (Exception e)
             {
                 if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' cannot be used between '{left.GetType()}' and 'null'.");
-                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' cannot be used between 'null' and '{right.GetType()}'.");
+                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '*' only can be used between two numbers");
             }
         }
         else if (Operator.Type == TokenType.Div)
@@ -112,8 +108,7 @@ public sealed class BinaryExpression : Expression
             catch (Exception e)
             {
                 if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' cannot be used between '{left.GetType()}' and 'null'.");
-                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' cannot be used between 'null' and '{right.GetType()}'.");
+                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '/' only can be used between two numbers");
             }
         }
         else if (Operator.Type == TokenType.Mod)
@@ -122,11 +117,10 @@ public sealed class BinaryExpression : Expression
             {
                 return (double)left % (double)right;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (right != null && left != null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' cannot be used between '{left.GetType()}' and '{right.GetType()}'.");
-                else if (right == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' cannot be used between '{left.GetType()}' and 'null'.");
-                else if (left == null) Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' cannot be used between 'null' and '{right.GetType()}'.");
+                else Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Operator '%' only can be used between two numbers");
             }
         }
         else if (Operator.Type == TokenType.Concat)
@@ -135,7 +129,7 @@ public sealed class BinaryExpression : Expression
             {
                 return (string)left + right;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: At least one of the elements to concatenate must be a string");
             }
@@ -145,7 +139,7 @@ public sealed class BinaryExpression : Expression
                 Evaluator.Diagnostics.RemoveError();
                 return toReturn;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: At least one of the elements to concatenate must be a string");
             }

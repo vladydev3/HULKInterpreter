@@ -27,7 +27,7 @@ public class InferenceTypes
         if (token.Type == TokenType.String) return InferenceType.String;
         if (token.Type == TokenType.Plus || token.Type == TokenType.Minus || token.Type == TokenType.Mult || token.Type == TokenType.Div || token.Type == TokenType.Mod || token.Type == TokenType.Negation || token.Type == TokenType.Pow) return InferenceType.Number;
         if (token.Type == TokenType.Pow) return InferenceType.Number;
-        if (token.Type == TokenType.And || token.Type == TokenType.Or || token.Type == TokenType.Diferent) return InferenceType.Bool;
+        if (token.Type == TokenType.And || token.Type == TokenType.Or || token.Type == TokenType.Diferent || token.Type == TokenType.Comparation) return InferenceType.Bool;
         if (token.Type == TokenType.Identificator)
         {
             foreach (var item in Evaluator.VariableScope)
@@ -65,10 +65,15 @@ public class InferenceTypes
         }
         if (expression is IfExpression ifExpression)
         {
+            var condition = GetInferenceType(ifExpression.Condition);
             var ifexp = GetInferenceType(ifExpression.ifExpression);
             var elseexp = GetInferenceType(ifExpression.ElseExpression);
+            if (condition == InferenceType.Any)
+            {
+                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Condition must be a boolean expression.");
+                return InferenceType.None;
+            }
             if (ifexp == elseexp) return ifexp;
-            if (elseexp == InferenceType.Any) return ifexp;
             return InferenceType.Any;
         }
         if (expression is ForExpression forExpression)

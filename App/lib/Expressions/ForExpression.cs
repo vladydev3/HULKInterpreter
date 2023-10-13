@@ -21,7 +21,6 @@ public class ForExpression : Expression
     public override object EvaluateExpression()
     {
         string returnFor = "";
-        Evaluator.PrintResult = true;
 
         try
         {

@@ -70,7 +70,6 @@ public class FunctionCallExpression : Expression
                 Evaluator.VariableScope.RemoveAt(Evaluator.VariableScope.Count - 1);
             }
         }
-        Evaluator.PrintResult = true;
         
         return toReturn;
     }

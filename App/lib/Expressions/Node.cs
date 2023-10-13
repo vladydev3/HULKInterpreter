@@ -7,7 +7,7 @@ public abstract class Node
 
 public abstract class Expression : Node
 {
-    public abstract object EvaluateExpression();
+    public abstract object? EvaluateExpression();
     public Errors Diagnostics = new();
 }
 

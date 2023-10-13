@@ -82,32 +82,33 @@ class Parser
     {
         if (Current.Type == Type) return NextToken();
 
-        if (Type == TokenType.RParen) Diagnostics.AddError($"! SYNTAX ERROR: Missing closing parenthesis after '{tokens[position - 1].Text}' (column {Current.Position+1}).");
+        if (Type == TokenType.RParen) Diagnostics.AddError($"! SYNTAX ERROR: Missing closing parenthesis after '{tokens[position - 1].Text}' (column {Current.Position + 1}).");
         else if (Type == TokenType.EOL) Diagnostics.AddError($"! SYNTAX ERROR: ';' expected ");
-        else Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected '{Type}' (column {Current.Position+1}).");
+        else Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected '{Type}' (column {Current.Position + 1}).");
 
-        return new Token(Type, Current.Position, null, null);
+        return new Token(TokenType.Error, Current.Position, string.Empty, string.Empty);
     }
     private Token Match(string Type)
     {
         if (Current.Text == Type) return NextToken();
 
-        Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected '{Type}' (column {Current.Position+1}).");
+        Diagnostics.AddError($"! SYNTAX ERROR: Invalid token '{Current.Text}', expected '{Type}' (column {Current.Position + 1}).");
 
-        return new Token(TokenType.Error, Current.Position, null, null);
+        return new Token(TokenType.Error, Current.Position, string.Empty, string.Empty);
     }
 
     public SyntaxTree Parse()
     {
         var expression = ParseExpression();
+
         var endOfFileToken = Match(TokenType.EOL);
         return new SyntaxTree(Diagnostics, expression, endOfFileToken);
     }
-    public Expression ParseExpression(int parentPrecedence = 0)
+    public Expression? ParseExpression(int parentPrecedence = 0)
     {
         if (count > 1000)
         {
-            Diagnostics.AddError($"! SYNTAX ERROR: Can't be parsed '{Current.Text}' (column {Current.Position+1}).");
+            Diagnostics.AddError($"! SYNTAX ERROR: Can't be parsed '{Current.Text}' (column {Current.Position + 1}).");
             return null;
         }
         count++;
@@ -119,7 +120,8 @@ class Parser
             var operand = ParseExpression(unaryOperatorPrecedence);
             if (operand == null)
             {
-                Diagnostics.AddError($"! SYNTAX ERROR: Missing operand after '{operatorToken.Text}' operator (column {Current.Position+1}).");
+                Diagnostics.AddError($"! SYNTAX ERROR: Missing operand after '{operatorToken.Text}' operator (column {Current.Position + 1}).");
+                return null;
             }
             left = new UnaryExpression(operatorToken, operand);
         }
@@ -134,9 +136,16 @@ class Parser
             var right = ParseExpression(precedence);
             if (left == null || right == null)
             {
-                Diagnostics.AddError($"! SYNTAX ERROR: Invalid expression '{tokens[position-1].Text}' (column {Current.Position})");
+                Diagnostics.AddError($"! SYNTAX ERROR: Invalid expression '{tokens[position - 1].Text}' (column {Current.Position + 1})");
             }
-            left = new BinaryExpression(left, operatorToken, right);
+            if (left != null && right != null)
+            {
+                left = new BinaryExpression(left, operatorToken, right);
+            }
+            else
+            {
+                Diagnostics.AddError($"! SYNTAX ERROR: Invalid expression '{tokens[position - 1].Text}' (column {Current.Position + 1})");
+            }
         }
         return left;
     }
@@ -145,18 +154,25 @@ class Parser
     {
         if (count > 1000)
         {
-            Diagnostics.AddError($"! SYNTAX ERROR: Can't be parsed '{Current.Text}' (column {Current.Position+1}).");
+            Diagnostics.AddError($"! SYNTAX ERROR: Can't be parsed '{Current.Text}' (column {Current.Position + 1}).");
             return null;
         }
         if (Current.Type == TokenType.LBracket)
         {
             Match(TokenType.LBracket);
             List<Expression> elements = new();
-            if (Current.Type != TokenType.RBracket) elements.Add(ParseExpression());
+            if (Current.Type != TokenType.RBracket)
+            {
+                var expression = ParseExpression();
+                if (expression != null) elements.Add(expression);
+                else Diagnostics.AddError("! SYNTAX ERROR: Missing expression in vector (column {Current.Position+1}).");
+            }
             while (Current.Type != TokenType.RBracket)
             {
                 Match(TokenType.Comma);
-                elements.Add(ParseExpression());
+                var expression = ParseExpression();
+                if (expression != null) elements.Add(expression);
+                else Diagnostics.AddError("! SYNTAX ERROR: Missing expression in vector (column {Current.Position+1}).");
             }
             Match(TokenType.RBracket);
 
@@ -195,14 +211,14 @@ class Parser
         {
             if (Current.Text == "log")
             {
-                var logToken = NextToken();
+                NextToken();
                 Match(TokenType.LParen);
-                var bas = Match(TokenType.Number);
+                var bas = ParseExpression();
                 Match(TokenType.Comma);
-                var number = Match(TokenType.Number);
+                var number = ParseExpression();
                 Match(TokenType.RParen);
 
-                return new LogExpression(logToken, bas, number);
+                return new LogExpression(bas, number);
             }
             if (Current.Text == "range")
             {
@@ -260,7 +276,7 @@ class Parser
                 variablesNames.Add(Match(TokenType.Identificator));
                 Match(TokenType.Asignation);
                 variablesExpressions.Add(ParseExpression());
-                if (variablesExpressions[0] == null) Diagnostics.AddError($"! SYNTAX ERROR: Missing expression in 'let-in' after variable '{variablesNames[0].Text} (column {Current.Position+1})'");
+                if (variablesExpressions[0] == null) Diagnostics.AddError($"! SYNTAX ERROR: Missing expression in 'let-in' after variable '{variablesNames[0].Text} (column {Current.Position + 1})'");
                 Evaluator.VariableScope.Add(new Tuple<string, Expression, int>(variablesNames[0].Text, variablesExpressions[0], ++Evaluator.ScopePointer));
                 if (Current.Type == TokenType.Comma)
                 {
@@ -277,13 +293,13 @@ class Parser
                     if (inToken.Type == TokenType.Error)
                     {
                         Diagnostics.RemoveError();
-                        Diagnostics.AddError($"! SYNTAX ERROR: Missing 'in' after 'let' expression (column {Current.Position+1}).");
+                        Diagnostics.AddError($"! SYNTAX ERROR: Missing 'in' after 'let' expression (column {Current.Position + 1}).");
                     }
                     var inexpression = ParseExpression();
 
                     if (inexpression == null)
                     {
-                        Diagnostics.AddError($"! SYNTAX ERROR: Missing expression after 'in' (column {Current.Position+1}).");
+                        Diagnostics.AddError($"! SYNTAX ERROR: Missing expression after 'in' (column {Current.Position + 1}).");
                     }
                     return new LetInExpression(variablesNames, variablesExpressions, inexpression);
                 }
@@ -293,9 +309,10 @@ class Parser
                     var inExpression = ParseExpression();
                     if (inExpression == null)
                     {
-                        Diagnostics.AddError($"! SYNTAX ERROR: Missing expression after 'in' (column {Current.Position+1}).");
+                        Diagnostics.AddError($"! SYNTAX ERROR: Missing expression after 'in' (column {Current.Position + 1}).");
+                        return null;
                     }
-                    return new LetInExpression(variablesNames, variablesExpressions, inExpression);
+                    else return new LetInExpression(variablesNames, variablesExpressions, inExpression);
                 }
             }
             if (Current.Text == "for")
@@ -309,21 +326,40 @@ class Parser
                     var name = Match(TokenType.Identificator);
                     Match(TokenType.RParen);
                     var body = ParseExpression();
-
-                    return new ForExpression(identifier, null, name, body);
+                    if (body == null)
+                    {
+                        Diagnostics.AddError($"! SYNTAX ERROR: Missing expression after 'for' (column {Current.Position + 1}).");
+                        return null;
+                    }
+                    else return new ForExpression(identifier, null, name, body);
                 }
                 else
                 {
                     Match("range");
                     Match(TokenType.LParen);
                     var start = ParseExpression();
+                    if (start == null)
+                    {
+                        Diagnostics.AddError($"! SYNTAX ERROR: Missing expression after 'range' (column {Current.Position + 1}).");
+                        return null;
+                    }
                     if (Current.Type == TokenType.Comma)
                     {
                         Match(TokenType.Comma);
                         var end = ParseExpression();
+                        if (end == null)
+                        {
+                            Diagnostics.AddError($"! SYNTAX ERROR: Missing expression after ',' (column {Current.Position + 1}).");
+                            return null;
+                        }
                         Match(TokenType.RParen);
                         Match(TokenType.RParen);
                         var body = ParseExpression();
+                        if (body == null)
+                        {
+                            Diagnostics.AddError($"! SYNTAX ERROR: Missing expression after 'for' (column {Current.Position + 1}).");
+                            return null;
+                        }
                         return new ForExpression(identifier, new RangeFunction(start, end), null, body);
                     }
                     Match(TokenType.RParen);
@@ -340,7 +376,11 @@ class Parser
                 NextToken();
                 Match(TokenType.LParen);
                 var condition = ParseExpression();
-                if (condition == null) Diagnostics.AddError($"! SYNTAX ERROR: Missing 'if' condition (column {Current.Position+1}).");
+                if (condition == null)
+                {
+                    Diagnostics.AddError($"! SYNTAX ERROR: Missing 'if' condition (column {Current.Position + 1}).");
+                    return null;
+                }
                 Match(TokenType.RParen);
                 var ifexpression = ParseExpression();
                 while (Current.Text == "elif")
@@ -358,7 +398,7 @@ class Parser
             }
             if (Current.Text == "function")
             {
-                ParseFunctionExpression();
+                ParseFunctionDeclaration();
                 return null;
             }
             if (Current.Text == "while")
@@ -388,7 +428,7 @@ class Parser
                     if (Diagnostics.AnyError())
                     {
                         Diagnostics.RemoveError();
-                        Diagnostics.AddError($"! SYNTAX ERROR: Missing closing parenthesis in '{name.Text}' call (column {Current.Position+1}).");
+                        Diagnostics.AddError($"! SYNTAX ERROR: Missing closing parenthesis in '{name.Text}' call (column {Current.Position + 1}).");
                         return null;
                     }
                     arguments.Add(ParseExpression());
@@ -439,7 +479,7 @@ class Parser
 
         return null;
     }
-    private void ParseFunctionExpression()
+    private void ParseFunctionDeclaration()
     {
         Match("function");
         var name = Match(TokenType.Identificator);
@@ -449,7 +489,13 @@ class Parser
         while (Current.Type != TokenType.RParen)
         {
             Match(TokenType.Comma);
-            arguments.Add(Match(TokenType.Identificator));
+            var argument = Match(TokenType.Identificator);
+            if (argument.Text == string.Empty)
+            {
+                Diagnostics.AddError($"! SYNTAX ERROR: Missing argument in '{name.Text}' function (column {Current.Position + 1}).");
+                return;
+            }
+            arguments.Add(argument);
         }
         Match(TokenType.RParen);
         Match(TokenType.Asignation);
@@ -458,11 +504,29 @@ class Parser
 
         foreach (var item in Evaluator.FunctionsScope)
         {
-            if (item.Item1 == name.Text) Diagnostics.AddError($"! PARSER ERROR: \"{name.Text}\" is already defined.");
+            if (item.Item1 == name.Text)
+            {
+                Diagnostics.AddError($"! PARSER ERROR: \"{name.Text}\" is already defined.");
+                return;
+            }
+        }
+        if (Diagnostics.AnyError()) return;
+
+        Evaluator.FunctionsScope.Add(new Tuple<string, List<Token>, Expression>(name.Text, arguments, body));
+        
+        body.EvaluateExpression();
+        if (!Evaluator.FunctionBody.Item1)
+        {
+            Diagnostics.AddError(Evaluator.FunctionBody.Item2, true);
+            Evaluator.FunctionBody = (true, "");
+            return;
         }
 
-        if (Diagnostics.AnyError()) return;
-        Evaluator.FunctionsScope.Add(new Tuple<string, List<Token>, Expression>(name.Text, arguments, body));
+        if (InferenceTypes.GetInferenceType(body)== InferenceType.None)
+        {
+            Diagnostics.AddError($"! SEMANTIC ERROR: Can't infer the type of the arguments in '{name.Text}'.");
+            return;
+        }
     }
 }
 

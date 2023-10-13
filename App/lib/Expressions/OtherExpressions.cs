@@ -34,7 +34,6 @@ public class PrintExpression : Expression
     {
         try
         {
-            Evaluator.PrintResult = true;
             return Evaluator.Evaluate(ExpressionInside);
         }
         catch (Exception e)
@@ -140,13 +139,11 @@ public class MathExpression : Expression
 public class LogExpression : Expression
 {
     public override TokenType Type => TokenType.MathFunctions;
-    public Token LogFunc { get; }
-    public Token Base { get; }
-    public Token Number { get; }
+    public Expression Base { get; }
+    public Expression Number { get; }
 
-    public LogExpression(Token logFunc, Token b, Token number)
+    public LogExpression(Expression b, Expression number)
     {
-        LogFunc = logFunc;
         Base = b;
         Number = number;
     }
@@ -155,7 +152,7 @@ public class LogExpression : Expression
     {
         try
         {
-            return Math.Log((double)Number.Value, (double)Base.Value);
+            return Math.Log((double)Number.EvaluateExpression(), (double)Base.EvaluateExpression());
         }
         catch (Exception e)
         {

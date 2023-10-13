@@ -18,9 +18,19 @@ public class Errors
         Console.ForegroundColor = color;
     }
 
-    public void AddError(string error)
+    public void AddError(string error, bool begin = false)
     {
+        if (begin)
+        {
+            diagnostics.Insert(0, error);
+            return;
+        }
         diagnostics.Add(error);
+    }
+
+    public int Count()
+    {
+        return diagnostics.Count;
     }
 
     public void RemoveError()

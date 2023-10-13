@@ -9,7 +9,7 @@ Console.ForegroundColor = clr;
 while (true)
 {
     Evaluator.VariableScope = new List<Tuple<string, Expression, int>>();
-    Evaluator.PrintResult = false;
+    Evaluator.Diagnostics = new Errors();
     Evaluator.ScopePointer = 0;
     Console.Write("> ");
     string code = Console.ReadLine();
@@ -50,7 +50,7 @@ while (true)
         if (Evaluator.Diagnostics.AnyError()) Evaluator.Diagnostics.ShowError();
         else
         {
-            if (result != null && Evaluator.PrintResult)
+            if (result != null)
             {
                 Console.WriteLine(result);
             }

@@ -3,8 +3,9 @@
 
 var clr = Console.ForegroundColor;
 Console.ForegroundColor = ConsoleColor.Green;
-Console.WriteLine($"HULK Interpreter");
-Console.WriteLine($"-----------------------------");
+Console.WriteLine($"HULK Interpreter. Write your code and press enter to execute.");
+Console.WriteLine($"Type #clear to clear the console.");
+Console.WriteLine($"-----------------------------------------------------------------");
 Console.ForegroundColor = clr;
 while (true)
 {
@@ -26,34 +27,26 @@ while (true)
     var syntaxTree = SyntaxTree.Parse(code);
 
     if (syntaxTree == null) continue;
-    if (syntaxTree.Diagnostics.AnyError())
-    {
-        watch.Stop();
-        var elapsedMs = watch.ElapsedMilliseconds;
-        var c = Console.ForegroundColor;
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"~ Execution time: {elapsedMs}ms");
-        Console.ForegroundColor = c;
-        syntaxTree.Diagnostics.ShowError();
-    }
+    if (syntaxTree.Diagnostics.AnyError()) syntaxTree.Diagnostics.ShowError();
     else
     {
         var result = Evaluator.Evaluate(syntaxTree.Root);
 
         watch.Stop();
+        if (Evaluator.Diagnostics.AnyError())
+        {
+            Evaluator.Diagnostics.ShowError();
+            continue;
+        }
         var elapsedMs = watch.ElapsedMilliseconds;
         var c = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine($"~ Execution time: {elapsedMs}ms");
         Console.ForegroundColor = c;
 
-        if (Evaluator.Diagnostics.AnyError()) Evaluator.Diagnostics.ShowError();
-        else
+        if (result != null)
         {
-            if (result != null)
-            {
-                Console.WriteLine(result);
-            }
+            Console.WriteLine(result);
         }
     }
 }

@@ -12,9 +12,6 @@ public class StringExpression : Expression
 
     public override string? EvaluateExpression()
     {
-        StringToken.Value = StringToken.Value.ToString().Replace("\\t", "\t");
-        StringToken.Value = StringToken.Value.ToString().Replace("\\n", "\n");
-        StringToken.Value = StringToken.Value.ToString().Replace("\\", "");
         return StringToken.Value.ToString();
     }
 }

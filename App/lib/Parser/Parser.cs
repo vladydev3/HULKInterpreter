@@ -271,6 +271,16 @@ class Parser
                 return new NumberExpression(new Token(TokenType.Number, 0, Math.E.ToString(), Math.E));
             }
 
+            if(Current.Text =="rand")
+            {
+                NextToken();
+
+                Match(TokenType.LParen);
+                Match(TokenType.RParen);
+
+                return new NumberExpression(new Token(TokenType.Number, 0, "", new Random().NextDouble()));
+            }
+
             var trigToken = NextToken();
             Match(TokenType.LParen);
             var expression = ParseExpression();
@@ -608,7 +618,7 @@ class Parser
 
         Evaluator.FunctionsScope.Add(new Tuple<string, List<Token>, Expression>(name.Text, arguments, body));
 
-        body.EvaluateExpression();
+        body.EvaluateExpression(); 
         if (!Evaluator.FunctionBody.Item1)
         {
             Diagnostics.AddError(Evaluator.FunctionBody.Item2, true);

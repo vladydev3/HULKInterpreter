@@ -32,7 +32,7 @@ public class Lexer
                 }
                 if (currentChar != ' ' && char.IsLetter(currentChar))
                 {
-                    diagnostics.AddError($"! LEXICAL ERROR: '{number + currentChar}' isn't a valid token (column {currentIndex+1})");
+                    diagnostics.AddError($"! LEXICAL ERROR: '{number + currentChar}' isn't a valid token (column {currentIndex + 1})");
                 }
                 tokens.Add(new Token(TokenType.Number, currentIndex, number, double.Parse(number)));
                 continue;
@@ -53,8 +53,8 @@ public class Lexer
                     tokens.Add(new Token(TokenType.UtilFunctions, currentIndex, funct, string.Empty));
                     continue;
                 }
-                if (funct == string.Empty) diagnostics.AddError($"! LEXICAL ERROR: '{currentChar}' isn't a valid token (column {currentIndex+1})");
-                else diagnostics.AddError($"! LEXICAL ERROR: '{funct}' isn't a valid token (column {currentIndex+1})");
+                if (funct == string.Empty) diagnostics.AddError($"! LEXICAL ERROR: '{currentChar}' isn't a valid token (column {currentIndex + 1})");
+                else diagnostics.AddError($"! LEXICAL ERROR: '{funct}' isn't a valid token (column {currentIndex + 1})");
                 continue;
             }
             else if (char.IsLetter(currentChar) || currentChar == '_')
@@ -187,7 +187,7 @@ public class Lexer
             else if (currentChar == '!')
             {
                 currentIndex++;
-                if(currentIndex>=code.Length)
+                if (currentIndex >= code.Length)
                 {
                     tokens.Add(new Token(TokenType.Negation, currentIndex - 1, "!", string.Empty));
                     continue;
@@ -282,21 +282,60 @@ public class Lexer
                 currentIndex++;
                 if (currentIndex >= code.Length)
                 {
-                    diagnostics.AddError($"! LEXICAL ERROR: Unterminated String '{currentChar}' (column {currentIndex+1})");
+                    diagnostics.AddError($"! LEXICAL ERROR: Unterminated String '{currentChar}' (column {currentIndex + 1})");
                     break;
                 }
                 try
                 {
                     while (code[currentIndex] != '"')
                     {
-                        str += code[currentIndex];
-                        currentIndex++;
+                        if (code[currentIndex] == '\\')
+                        {
+                            currentIndex++;
+                            if (currentIndex >= code.Length)
+                            {
+                                diagnostics.AddError($"! LEXICAL ERROR: Unterminated String '{currentChar}' (column {currentIndex + 1})");
+                                break;
+                            }
+                            if (code[currentIndex] == 'n')
+                            {
+                                str += '\n';
+                                currentIndex++;
+                            }
+                            else if (code[currentIndex] == 't')
+                            {
+                                str += '\t';
+                                currentIndex++;
+                            }
+                            else if (code[currentIndex] == '"')
+                            {
+                                str += '"';
+                                currentIndex++;
+                            }
+                            else if (code[currentIndex] == '\\')
+                            {
+                                str += '\\';
+                                currentIndex++;
+                            }
+                            else
+                            {
+                                diagnostics.AddError($"! LEXICAL ERROR: Invalid escape sequence '\\{code[currentIndex]}' (column {currentIndex + 1})");
+                                currentIndex++;
+                            }
+                        }
+                        else
+                        {
+                            str += code[currentIndex];
+                            currentIndex++;
+                        }
                     }
+
+
                 }
                 catch (Exception e)
                 {
-                    if (currentIndex >= code.Length) diagnostics.AddError($"! LEXICAL ERROR: Unterminated String '{str}' (column {currentIndex+1})");
-                    else diagnostics.AddError($"! LEXICAL ERROR: {e} (column {currentIndex+1})");
+                    if (currentIndex >= code.Length) diagnostics.AddError($"! LEXICAL ERROR: Unterminated String '{str}' (column {currentIndex + 1})");
+                    else diagnostics.AddError($"! LEXICAL ERROR: {e} (column {currentIndex + 1})");
                 }
                 tokens.Add(new Token(TokenType.String, currentIndex, str, str));
                 currentIndex++;
@@ -312,7 +351,7 @@ public class Lexer
             {
                 tokens.Add(new Token(TokenType.RBracket, currentIndex, "]", string.Empty));
             }
-            diagnostics.AddError($"! LEXICAL ERROR: '{currentChar}' isn't a valid token (column {currentIndex+1})");
+            diagnostics.AddError($"! LEXICAL ERROR: '{currentChar}' isn't a valid token (column {currentIndex + 1})");
 
         }
         return tokens;

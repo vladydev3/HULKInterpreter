@@ -121,16 +121,6 @@ public class MathExpression : Expression
                     Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
                 }
                 break;
-            case "rand":
-                try
-                {
-                    return new Random().NextDouble();
-                }
-                catch (Exception e)
-                {
-                    Diagnostics.AddError($"! SEMANTIC ERROR: {e.Message}");
-                }
-                break;
         }
         return null;
     }

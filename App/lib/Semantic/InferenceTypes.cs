@@ -44,55 +44,40 @@ public class InferenceTypes
 
     public static InferenceType GetInferenceType(Expression expression)
     {
-        if (expression is StringExpression stringExpression) return GetInferenceType(stringExpression.StringToken);
-        if (expression is BooleanExpression booleanExpression) return GetInferenceType(booleanExpression.Bool);
-        if (expression is NumberExpression numberExpression)
+        return expression switch
         {
-            var numToken = numberExpression.NumberToken;
-            if (numToken == null) return InferenceType.Any;
-            return GetInferenceType(numToken);
-        }
-        if (expression is VariableExpression variableExpression) return GetInferenceType(variableExpression.VariableName);
-        if (expression is UnaryExpression unaryExpression)
+            StringExpression stringExpression => GetInferenceType(stringExpression.StringToken),
+            BooleanExpression booleanExpression => GetInferenceType(booleanExpression.Bool),
+            NumberExpression numberExpression => numberExpression.NumberToken == null ? InferenceType.Any : GetInferenceType(numberExpression.NumberToken),
+            VariableExpression variableExpression => GetInferenceType(variableExpression.VariableName),
+            UnaryExpression unaryExpression => GetInferenceType(unaryExpression.Operand),
+            BinaryExpression binaryExpression => GetInferenceType(binaryExpression.Operator),
+            FunctionCallExpression _ => InferenceType.Any,
+            IfExpression ifExpression => HandleIfExpression(ifExpression),
+            ForExpression forExpression => HandleLoopExpression(forExpression.Body),
+            WhileExpression whileExpression => HandleLoopExpression(whileExpression.body),
+            _ => InferenceType.None,
+        };
+    }
+
+    private static InferenceType HandleIfExpression(IfExpression ifExpression)
+    {
+        var condition = GetInferenceType(ifExpression.Condition);
+        var ifexp = GetInferenceType(ifExpression.ifExpression);
+        var elseexp = GetInferenceType(ifExpression.ElseExpression);
+        if (condition == InferenceType.Any)
         {
-            var operand = GetInferenceType(unaryExpression.Operand);
-            if (operand == InferenceType.Bool) return InferenceType.Bool;
-            if (operand == InferenceType.Number) return InferenceType.Number;
-            return InferenceType.Any;
+            Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Condition must be a boolean expression.");
+            return InferenceType.None;
         }
-        if (expression is BinaryExpression binaryExpression)
-        {
-            return GetInferenceType(binaryExpression.Operator);
-        }
-        if (expression is FunctionCallExpression functionCallExpression)
-        {
-            return InferenceType.Any;
-        }
-        if (expression is IfExpression ifExpression)
-        {
-            var condition = GetInferenceType(ifExpression.Condition);
-            var ifexp = GetInferenceType(ifExpression.ifExpression);
-            var elseexp = GetInferenceType(ifExpression.ElseExpression);
-            if (condition == InferenceType.Any)
-            {
-                Evaluator.Diagnostics.AddError($"! SEMANTIC ERROR: Condition must be a boolean expression.");
-                return InferenceType.None;
-            }
-            if (ifexp == elseexp) return ifexp;
-            return InferenceType.Any;
-        }
-        if (expression is ForExpression forExpression)
-        {
-            var forexp = GetInferenceType(forExpression.Body);
-            if (forexp == InferenceType.Any) return forexp;
-            return InferenceType.Any;
-        }
-        if (expression is WhileExpression whileExpression)
-        {
-            var whileexp = GetInferenceType(whileExpression.body);
-            if (whileexp == InferenceType.Any) return whileexp;
-            return InferenceType.Any;
-        }
-        return InferenceType.None;
+        if (ifexp == elseexp) return ifexp;
+        return InferenceType.Any;
+    }
+
+    private static InferenceType HandleLoopExpression(Expression loopBody)
+    {
+        var loopExp = GetInferenceType(loopBody);
+        if (loopExp == InferenceType.Any) return loopExp;
+        return InferenceType.Any;
     }
 }
